@@ -1,0 +1,77 @@
+﻿version: '3.8'
+
+services:
+  # PostgreSQL with PostGIS for location data
+  postgres:
+    image: postgis/postgis:13-3.1
+    container_name: aapat_postgres
+    environment:
+      POSTGRES_USER: aapat_user
+      POSTGRES_PASSWORD: aapat_password
+      POSTGRES_DB: aapat_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - aapat_network
+
+  # Redis for caching and real-time data
+  redis:
+    image: redis:7-alpine
+    container_name: aapat_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - aapat_network
+
+  # Emergency Request Service
+  emergency-service:
+    build:
+      context: ./services/emergency-service
+      dockerfile: Dockerfile
+    container_name: aapat_emergency_service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aapat_user
+      - DB_PASSWORD=aapat_password
+      - DB_NAME=aapat_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - aapat_network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: aapat_api_gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - EMERGENCY_SERVICE_URL=http://emergency-service:3001
+      - JWT_SECRET=your-secret-key
+    depends_on:
+      - emergency-service
+    networks:
+      - aapat_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  aapat_network:
+    driver: bridge
