@@ -104,6 +104,49 @@ function App() {
     fetchMetrics();
   };
 
+  const createTestEmergency = async () => {
+    const testEmergency = {
+      caller_phone: "+919876543210",
+      patient_info: {
+        name: "Test Patient",
+        age: 35,
+        gender: "MALE",
+        blood_type: "O+"
+      },
+      location: {
+        latitude: 12.9716 + (Math.random() - 0.5) * 0.01, // Add some randomness
+        longitude: 77.5946 + (Math.random() - 0.5) * 0.01
+      },
+      address: "Test Location, Bangalore",
+      emergency_type: ["CARDIAC", "TRAUMA", "RESPIRATORY", "NEUROLOGICAL"][Math.floor(Math.random() * 4)],
+      symptoms: "Test emergency for demonstration",
+      conscious: true,
+      breathing: true,
+      pain_level: Math.floor(Math.random() * 10) + 1
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/emergency/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testEmergency)
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('✅ Test emergency created successfully! Check the Recent Emergencies section.');
+        updateMetrics();
+        fetchRecentEmergencies();
+      } else {
+        alert('❌ Failed to create test emergency: ' + result.message);
+      }
+    } catch (error) {
+      alert('❌ Error creating test emergency: ' + error.message);
+    }
+  };
+
   const getPriorityColor = (priority: number) => {
     switch (priority) {
       case 1: return '#dc2626'; // Critical - Red
@@ -344,6 +387,21 @@ function App() {
               }}
             >
               🔄 Refresh Data
+            </button>
+            <button 
+              onClick={createTestEmergency}
+              style={{
+                background: 'linear-gradient(to right, #f59e0b, #d97706)',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              🚨 Create Test Emergency
             </button>
             <button style={{
               background: 'transparent',

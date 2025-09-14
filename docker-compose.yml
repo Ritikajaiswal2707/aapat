@@ -234,6 +234,8 @@
     container_name: aapat_api_gateway
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend/build:/app/frontend/build
     environment:
       - NODE_ENV=development
       - EMERGENCY_SERVICE_URL=http://emergency-service:3001

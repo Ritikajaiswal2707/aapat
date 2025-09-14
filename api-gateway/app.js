@@ -3,6 +3,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const path = require('path');
 
 const app = express();
 
@@ -21,6 +22,9 @@ const limiter = rateLimit({
 });
 
 app.use(limiter);
+
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, 'frontend/build')));
 
 // Service URLs
 const services = {
@@ -60,7 +64,7 @@ const createProxy = (target) => {
   });
 };
 
-// Routes
+// API Routes
 app.use('/api/emergency', createProxy(services.emergency));
 app.use('/api/ambulances', createProxy(services.ambulance));
 app.use('/api/dispatch', createProxy(services.dispatch));
@@ -69,6 +73,11 @@ app.use('/api/patients', createProxy(services.patient));
 app.use('/api/communication', createProxy(services.communication));
 app.use('/api/billing', createProxy(services.billing));
 app.use('/api/analytics', createProxy(services.analytics));
+
+// Catch all handler: send back React's index.html file for any non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
