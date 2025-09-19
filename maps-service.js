@@ -6,8 +6,10 @@ const googleMapsApiKey = 'your_google_maps_api_key'; // Replace with your actual
 
 class MapsService {
   constructor() {
-    this.isConfigured = googleMapsApiKey && googleMapsApiKey !== 'your_google_maps_api_key';
+    // Force mock mode for testing
+    this.isConfigured = false; // Always use mock mode for testing
     this.baseUrl = 'https://maps.googleapis.com/maps/api';
+    console.log('🗺️ Maps Service: Running in MOCK MODE for testing');
   }
 
   // Get directions between two points

@@ -1,0 +1,10 @@
+{
+  "generated_at": "2025-09-19T05:08:39.911Z",
+  "total_hospitals": 5,
+  "total_ambulances": 6,
+  "total_patients": 5,
+  "total_emergency_types": 10,
+  "total_emergency_requests": 3,
+  "total_sms_messages": 3,
+  "total_payment_orders": 2
+}

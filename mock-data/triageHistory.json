@@ -1,0 +1,2923 @@
+[
+  {
+    "emergency_id": "triage_test_001",
+    "timestamp": "2025-09-19T05:30:42.040Z",
+    "input_data": {
+      "emergency_id": "triage_test_001",
+      "emergency_type": "Heart Attack",
+      "symptoms": "severe chest pain, difficulty breathing, sweating, nausea",
+      "patient_info": {
+        "name": "John Doe",
+        "age": 65,
+        "medical_history": [
+          "hypertension",
+          "diabetes",
+          "heart disease"
+        ],
+        "blood_group": "A+"
+      },
+      "address": "123 Main Street, New Delhi",
+      "vital_signs": {
+        "blood_pressure": 180,
+        "heart_rate": 120
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 1.3,
+          "matched_symptoms": [
+            {
+              "symptom": "chest_pain",
+              "matches": [
+                "chest pain"
+              ],
+              "weight": 0.9,
+              "category": "critical"
+            },
+            {
+              "symptom": "nausea_vomiting",
+              "matches": [
+                "nausea"
+              ],
+              "weight": 0.4,
+              "category": "medium"
+            }
+          ],
+          "confidence": 0.4,
+          "symptom_count": 2
+        },
+        "confidence": 0.4
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 65,
+              "weight": 0.3,
+              "description": "Patient is elderly (65 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "hypertension",
+                "diabetes",
+                "heart disease"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 0,
+          "patterns": [],
+          "confidence": 0.2,
+          "historical_data_points": 0
+        },
+        "confidence": 0.2
+      }
+    ],
+    "final_classification": {
+      "priority_level": 1,
+      "priority_name": "CRITICAL",
+      "confidence": 0.4,
+      "estimated_response_time": "2-5 minutes",
+      "recommended_ambulance_type": "CRITICAL_CARE",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 65,
+          "weight": 0.3,
+          "description": "Patient is elderly (65 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "hypertension",
+            "diabetes",
+            "heart disease"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Immediate dispatch of critical care ambulance",
+        "Alert nearest hospital emergency department",
+        "Prepare for potential life-saving interventions",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 0.86,
+      "score_breakdown": {
+        "symptom_score": 1.3,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 0
+      }
+    },
+    "confidence_score": 0.4,
+    "recommendations": [
+      "Immediate dispatch of critical care ambulance",
+      "Alert nearest hospital emergency department",
+      "Prepare for potential life-saving interventions",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "triage_test_002",
+    "timestamp": "2025-09-19T05:30:42.044Z",
+    "input_data": {
+      "emergency_id": "triage_test_002",
+      "emergency_type": "Minor Injury",
+      "symptoms": "small cut on finger, minor bleeding",
+      "patient_info": {
+        "name": "Jane Smith",
+        "age": 30,
+        "medical_history": [],
+        "blood_group": "O+"
+      },
+      "address": "456 Park Avenue, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0.3,
+          "matched_symptoms": [
+            {
+              "symptom": "minor_injury",
+              "matches": [
+                "cut",
+                "minor injury"
+              ],
+              "weight": 0.3,
+              "category": "medium"
+            }
+          ],
+          "confidence": 0.1,
+          "symptom_count": 1
+        },
+        "confidence": 0.1
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 0.2,
+          "patterns": [
+            {
+              "pattern": "time_based_priority",
+              "value": 1,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 1.0"
+            }
+          ],
+          "confidence": 0.30000000000000004,
+          "historical_data_points": 0
+        },
+        "confidence": 0.30000000000000004
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.3,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.16999999999999998,
+      "score_breakdown": {
+        "symptom_score": 0.3,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 0.2
+      }
+    },
+    "confidence_score": 0.3,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "triage_test_003",
+    "timestamp": "2025-09-19T05:30:42.047Z",
+    "input_data": {
+      "emergency_id": "triage_test_003",
+      "emergency_type": "Stroke",
+      "symptoms": "facial droop, slurred speech, weakness on one side",
+      "patient_info": {
+        "name": "Bob Johnson",
+        "age": 70,
+        "medical_history": [
+          "hypertension",
+          "atrial fibrillation"
+        ],
+        "blood_group": "B+"
+      },
+      "address": "789 Oak Street, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0.95,
+          "matched_symptoms": [
+            {
+              "symptom": "stroke_symptoms",
+              "matches": [
+                "facial droop",
+                "slurred speech",
+                "weakness"
+              ],
+              "weight": 0.95,
+              "category": "critical"
+            }
+          ],
+          "confidence": 0.3,
+          "symptom_count": 1
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 70,
+              "weight": 0.3,
+              "description": "Patient is elderly (70 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "hypertension",
+                "atrial fibrillation"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 0.5,
+          "patterns": [
+            {
+              "pattern": "time_based_priority",
+              "value": 2.5,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 2.5"
+            }
+          ],
+          "confidence": 0.30000000000000004,
+          "historical_data_points": 0
+        },
+        "confidence": 0.30000000000000004
+      }
+    ],
+    "final_classification": {
+      "priority_level": 2,
+      "priority_name": "HIGH",
+      "confidence": 0.4,
+      "estimated_response_time": "5-10 minutes",
+      "recommended_ambulance_type": "ADVANCED",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 70,
+          "weight": 0.3,
+          "description": "Patient is elderly (70 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "hypertension",
+            "atrial fibrillation"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Dispatch advanced ambulance within 10 minutes",
+        "Notify hospital of incoming patient",
+        "Monitor patient condition closely",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 0.735,
+      "score_breakdown": {
+        "symptom_score": 0.95,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 0.5
+      }
+    },
+    "confidence_score": 0.4,
+    "recommendations": [
+      "Dispatch advanced ambulance within 10 minutes",
+      "Notify hospital of incoming patient",
+      "Monitor patient condition closely",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "integrated_test_001",
+    "timestamp": "2025-09-19T05:30:52.082Z",
+    "input_data": {
+      "emergency_id": "integrated_test_001",
+      "emergency_type": "Heart Attack",
+      "symptoms": "critical heart rate, high blood pressure, low oxygen",
+      "patient_info": {
+        "name": "Test Patient",
+        "age": 65,
+        "medical_history": [
+          "heart disease"
+        ]
+      },
+      "address": "Test Location, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 65,
+              "weight": 0.3,
+              "description": "Patient is elderly (65 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "heart disease"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 0.7666666666666667,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 1,
+              "weight": 0.3,
+              "description": "Average priority for Heart Attack emergencies: 1.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 2.3333333333333335,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 2.3"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 1
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.375,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 65,
+          "weight": 0.3,
+          "description": "Patient is elderly (65 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "heart disease"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 0.2866666666666667,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 0.7666666666666667
+      }
+    },
+    "confidence_score": 0.375,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_0",
+    "timestamp": "2025-09-19T05:30:52.097Z",
+    "input_data": {
+      "emergency_id": "perf_test_0",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 0",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 0.55,
+          "patterns": [
+            {
+              "pattern": "time_based_priority",
+              "value": 2.75,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 2.8"
+            }
+          ],
+          "confidence": 0.30000000000000004,
+          "historical_data_points": 0
+        },
+        "confidence": 0.30000000000000004
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.275,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.05500000000000001,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 0.55
+      }
+    },
+    "confidence_score": 0.275,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_1",
+    "timestamp": "2025-09-19T05:30:52.101Z",
+    "input_data": {
+      "emergency_id": "perf_test_1",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 1",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.0"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 1
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18000000000000002,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_2",
+    "timestamp": "2025-09-19T05:30:52.106Z",
+    "input_data": {
+      "emergency_id": "perf_test_2",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 2",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8333333333333333,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.1666666666666665,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.2"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 2
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18333333333333335,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8333333333333333
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_3",
+    "timestamp": "2025-09-19T05:30:52.110Z",
+    "input_data": {
+      "emergency_id": "perf_test_3",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 3",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8571428571428572,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.2857142857142856,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.3"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 3
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18571428571428572,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8571428571428572
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_4",
+    "timestamp": "2025-09-19T05:30:52.115Z",
+    "input_data": {
+      "emergency_id": "perf_test_4",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 4",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.875,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.375,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.4"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 4
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.1875,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.875
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_5",
+    "timestamp": "2025-09-19T05:30:52.119Z",
+    "input_data": {
+      "emergency_id": "perf_test_5",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 5",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8888888888888888,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.4444444444444446,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.4"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 5
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18888888888888888,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8888888888888888
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_6",
+    "timestamp": "2025-09-19T05:30:52.124Z",
+    "input_data": {
+      "emergency_id": "perf_test_6",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 6",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 6
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_7",
+    "timestamp": "2025-09-19T05:30:52.126Z",
+    "input_data": {
+      "emergency_id": "perf_test_7",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 7",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9090909090909092,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5454545454545454,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 7
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19090909090909092,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9090909090909092
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_8",
+    "timestamp": "2025-09-19T05:30:52.128Z",
+    "input_data": {
+      "emergency_id": "perf_test_8",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 8",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9166666666666667,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5833333333333335,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 8
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19166666666666668,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9166666666666667
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_9",
+    "timestamp": "2025-09-19T05:30:52.130Z",
+    "input_data": {
+      "emergency_id": "perf_test_9",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 9",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9230769230769231,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.6153846153846154,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 9
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19230769230769232,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9230769230769231
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "triage_test_001",
+    "timestamp": "2025-09-19T05:37:13.750Z",
+    "input_data": {
+      "emergency_id": "triage_test_001",
+      "emergency_type": "Heart Attack",
+      "symptoms": "severe chest pain, difficulty breathing, sweating, nausea",
+      "patient_info": {
+        "name": "John Doe",
+        "age": 65,
+        "medical_history": [
+          "hypertension",
+          "diabetes",
+          "heart disease"
+        ],
+        "blood_group": "A+"
+      },
+      "address": "123 Main Street, New Delhi",
+      "vital_signs": {
+        "blood_pressure": 180,
+        "heart_rate": 120
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 1.3,
+          "matched_symptoms": [
+            {
+              "symptom": "chest_pain",
+              "matches": [
+                "chest pain"
+              ],
+              "weight": 0.9,
+              "category": "critical"
+            },
+            {
+              "symptom": "nausea_vomiting",
+              "matches": [
+                "nausea"
+              ],
+              "weight": 0.4,
+              "category": "medium"
+            }
+          ],
+          "confidence": 0.4,
+          "symptom_count": 2
+        },
+        "confidence": 0.4
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 65,
+              "weight": 0.3,
+              "description": "Patient is elderly (65 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "hypertension",
+                "diabetes",
+                "heart disease"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.4785714285714286,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 2.5,
+              "weight": 0.3,
+              "description": "Average priority for Heart Attack emergencies: 2.5"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.642857142857143,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 2
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 1,
+      "priority_name": "CRITICAL",
+      "confidence": 0.47500000000000003,
+      "estimated_response_time": "2-5 minutes",
+      "recommended_ambulance_type": "CRITICAL_CARE",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 65,
+          "weight": 0.3,
+          "description": "Patient is elderly (65 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "hypertension",
+            "diabetes",
+            "heart disease"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Immediate dispatch of critical care ambulance",
+        "Alert nearest hospital emergency department",
+        "Prepare for potential life-saving interventions",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 1.0078571428571428,
+      "score_breakdown": {
+        "symptom_score": 1.3,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 1.4785714285714286
+      }
+    },
+    "confidence_score": 0.47500000000000003,
+    "recommendations": [
+      "Immediate dispatch of critical care ambulance",
+      "Alert nearest hospital emergency department",
+      "Prepare for potential life-saving interventions",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "triage_test_002",
+    "timestamp": "2025-09-19T05:37:13.757Z",
+    "input_data": {
+      "emergency_id": "triage_test_002",
+      "emergency_type": "Minor Injury",
+      "symptoms": "small cut on finger, minor bleeding",
+      "patient_info": {
+        "name": "Jane Smith",
+        "age": 30,
+        "medical_history": [],
+        "blood_group": "O+"
+      },
+      "address": "456 Park Avenue, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0.3,
+          "matched_symptoms": [
+            {
+              "symptom": "minor_injury",
+              "matches": [
+                "cut",
+                "minor injury"
+              ],
+              "weight": 0.3,
+              "category": "medium"
+            }
+          ],
+          "confidence": 0.1,
+          "symptom_count": 1
+        },
+        "confidence": 0.1
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8933333333333333,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Minor Injury emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.466666666666667,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 1
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.35,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.3393333333333334,
+      "score_breakdown": {
+        "symptom_score": 0.3,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8933333333333333
+      }
+    },
+    "confidence_score": 0.35,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "triage_test_003",
+    "timestamp": "2025-09-19T05:37:13.759Z",
+    "input_data": {
+      "emergency_id": "triage_test_003",
+      "emergency_type": "Stroke",
+      "symptoms": "facial droop, slurred speech, weakness on one side",
+      "patient_info": {
+        "name": "Bob Johnson",
+        "age": 70,
+        "medical_history": [
+          "hypertension",
+          "atrial fibrillation"
+        ],
+        "blood_group": "B+"
+      },
+      "address": "789 Oak Street, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0.95,
+          "matched_symptoms": [
+            {
+              "symptom": "stroke_symptoms",
+              "matches": [
+                "facial droop",
+                "slurred speech",
+                "weakness"
+              ],
+              "weight": 0.95,
+              "category": "critical"
+            }
+          ],
+          "confidence": 0.3,
+          "symptom_count": 1
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 70,
+              "weight": 0.3,
+              "description": "Patient is elderly (70 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "hypertension",
+                "atrial fibrillation"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.3,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 2,
+              "weight": 0.3,
+              "description": "Average priority for Stroke emergencies: 2.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 1
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 1,
+      "priority_name": "CRITICAL",
+      "confidence": 0.45,
+      "estimated_response_time": "2-5 minutes",
+      "recommended_ambulance_type": "CRITICAL_CARE",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 70,
+          "weight": 0.3,
+          "description": "Patient is elderly (70 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "hypertension",
+            "atrial fibrillation"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Immediate dispatch of critical care ambulance",
+        "Alert nearest hospital emergency department",
+        "Prepare for potential life-saving interventions",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 0.815,
+      "score_breakdown": {
+        "symptom_score": 0.95,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 1.3
+      }
+    },
+    "confidence_score": 0.45,
+    "recommendations": [
+      "Immediate dispatch of critical care ambulance",
+      "Alert nearest hospital emergency department",
+      "Prepare for potential life-saving interventions",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "integrated_test_001",
+    "timestamp": "2025-09-19T05:37:23.796Z",
+    "input_data": {
+      "emergency_id": "integrated_test_001",
+      "emergency_type": "Heart Attack",
+      "symptoms": "critical heart rate, high blood pressure, low oxygen",
+      "patient_info": {
+        "name": "Test Patient",
+        "age": 65,
+        "medical_history": [
+          "heart disease"
+        ]
+      },
+      "address": "Test Location, New Delhi"
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0.7,
+          "risk_factors": [
+            {
+              "factor": "age_elderly",
+              "value": 65,
+              "weight": 0.3,
+              "description": "Patient is elderly (65 years old)"
+            },
+            {
+              "factor": "medical_heart_disease",
+              "value": [
+                "heart disease"
+              ],
+              "weight": 0.4,
+              "description": "Patient has heart_disease in medical history"
+            }
+          ],
+          "confidence": 0.7,
+          "risk_level": "HIGH"
+        },
+        "confidence": 0.7
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.2705882352941176,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 2,
+              "weight": 0.3,
+              "description": "Average priority for Heart Attack emergencies: 2.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.3529411764705883,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.4"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 3
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.375,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [
+        {
+          "factor": "age_elderly",
+          "value": 65,
+          "weight": 0.3,
+          "description": "Patient is elderly (65 years old)"
+        },
+        {
+          "factor": "medical_heart_disease",
+          "value": [
+            "heart disease"
+          ],
+          "weight": 0.4,
+          "description": "Patient has heart_disease in medical history"
+        }
+      ],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods",
+        "Extra care due to elderly patient",
+        "Cardiac monitoring recommended"
+      ],
+      "total_score": 0.33705882352941174,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0.7,
+        "environment_score": 0,
+        "pattern_score": 1.2705882352941176
+      }
+    },
+    "confidence_score": 0.375,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods",
+      "Extra care due to elderly patient",
+      "Cardiac monitoring recommended"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_0",
+    "timestamp": "2025-09-19T05:37:23.805Z",
+    "input_data": {
+      "emergency_id": "perf_test_0",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 0",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8777777777777778,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.388888888888889,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.4"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 10
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.1877777777777778,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8777777777777778
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_1",
+    "timestamp": "2025-09-19T05:37:23.807Z",
+    "input_data": {
+      "emergency_id": "perf_test_1",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 1",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8842105263157896,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.4210526315789473,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.4"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 11
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18842105263157896,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8842105263157896
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_2",
+    "timestamp": "2025-09-19T05:37:23.809Z",
+    "input_data": {
+      "emergency_id": "perf_test_2",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 2",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8900000000000001,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.45,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 12
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18900000000000003,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8900000000000001
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_3",
+    "timestamp": "2025-09-19T05:37:23.812Z",
+    "input_data": {
+      "emergency_id": "perf_test_3",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 3",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.8952380952380952,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.4761904761904763,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 13
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.18952380952380954,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.8952380952380952
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_4",
+    "timestamp": "2025-09-19T05:37:23.814Z",
+    "input_data": {
+      "emergency_id": "perf_test_4",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 4",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 14
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_5",
+    "timestamp": "2025-09-19T05:37:23.816Z",
+    "input_data": {
+      "emergency_id": "perf_test_5",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 5",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9043478260869566,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5217391304347827,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 15
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19043478260869567,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9043478260869566
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_6",
+    "timestamp": "2025-09-19T05:37:23.819Z",
+    "input_data": {
+      "emergency_id": "perf_test_6",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 6",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9083333333333332,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5416666666666665,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.5"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 16
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19083333333333333,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9083333333333332
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_7",
+    "timestamp": "2025-09-19T05:37:23.823Z",
+    "input_data": {
+      "emergency_id": "perf_test_7",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 7",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.912,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.56,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 17
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.1912,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.912
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_8",
+    "timestamp": "2025-09-19T05:37:23.826Z",
+    "input_data": {
+      "emergency_id": "perf_test_8",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 8",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9153846153846155,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.576923076923077,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 18
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19153846153846155,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9153846153846155
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  },
+  {
+    "emergency_id": "perf_test_9",
+    "timestamp": "2025-09-19T05:37:23.829Z",
+    "input_data": {
+      "emergency_id": "perf_test_9",
+      "emergency_type": "Test Emergency",
+      "symptoms": "test symptoms",
+      "patient_info": {
+        "name": "Test Patient 9",
+        "age": 30
+      }
+    },
+    "analysis_steps": [
+      {
+        "step": "symptom_analysis",
+        "result": {
+          "total_score": 0,
+          "matched_symptoms": [],
+          "confidence": 0,
+          "symptom_count": 0
+        },
+        "confidence": 0
+      },
+      {
+        "step": "risk_assessment",
+        "result": {
+          "risk_score": 0,
+          "risk_factors": [],
+          "confidence": 0.5,
+          "risk_level": "LOW"
+        },
+        "confidence": 0.5
+      },
+      {
+        "step": "environmental_analysis",
+        "result": {
+          "environment_score": 0,
+          "environment_factors": [],
+          "confidence": 0.3,
+          "weather": "normal",
+          "time_of_day": 11
+        },
+        "confidence": 0.3
+      },
+      {
+        "step": "pattern_analysis",
+        "result": {
+          "pattern_score": 1.9185185185185185,
+          "patterns": [
+            {
+              "pattern": "historical_priority",
+              "value": 4,
+              "weight": 0.3,
+              "description": "Average priority for Test Emergency emergencies: 4.0"
+            },
+            {
+              "pattern": "time_based_priority",
+              "value": 3.5925925925925926,
+              "weight": 0.2,
+              "description": "Average priority for emergencies at 11:00: 3.6"
+            }
+          ],
+          "confidence": 0.5,
+          "historical_data_points": 19
+        },
+        "confidence": 0.5
+      }
+    ],
+    "final_classification": {
+      "priority_level": 4,
+      "priority_name": "LOW",
+      "confidence": 0.325,
+      "estimated_response_time": "15-30 minutes",
+      "recommended_ambulance_type": "BASIC",
+      "risk_factors": [],
+      "recommendations": [
+        "Schedule non-emergency transport",
+        "Consider alternative transport methods"
+      ],
+      "total_score": 0.19185185185185186,
+      "score_breakdown": {
+        "symptom_score": 0,
+        "risk_score": 0,
+        "environment_score": 0,
+        "pattern_score": 1.9185185185185185
+      }
+    },
+    "confidence_score": 0.325,
+    "recommendations": [
+      "Schedule non-emergency transport",
+      "Consider alternative transport methods"
+    ]
+  }
+]

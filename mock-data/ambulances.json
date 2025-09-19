@@ -1,0 +1,151 @@
+[
+  {
+    "id": "amb_001",
+    "plate_number": "DL-01-AB-1234",
+    "type": "BASIC",
+    "equipment_level": "BASIC",
+    "status": "AVAILABLE",
+    "lat": 28.6139,
+    "lng": 77.209,
+    "driver": {
+      "id": "drv_001",
+      "name": "Rajesh Kumar",
+      "phone": "+91-98765-43210",
+      "email": "rajesh.kumar@aapat.com",
+      "experience_years": 5,
+      "rating": 4.5,
+      "total_emergencies": 120,
+      "successful_emergencies": 115,
+      "specializations": [
+        "Basic Life Support",
+        "First Aid"
+      ]
+    },
+    "fuel_level": 85,
+    "last_maintenance": "2024-01-15",
+    "next_maintenance": "2024-04-15",
+    "is_active": true
+  },
+  {
+    "id": "amb_002",
+    "plate_number": "DL-01-CD-5678",
+    "type": "INTERMEDIATE",
+    "equipment_level": "INTERMEDIATE",
+    "status": "AVAILABLE",
+    "lat": 28.62,
+    "lng": 77.215,
+    "driver": {
+      "id": "drv_002",
+      "name": "Suresh Singh",
+      "phone": "+91-98765-43211",
+      "email": "suresh.singh@aapat.com",
+      "experience_years": 8,
+      "rating": 4.7,
+      "total_emergencies": 200,
+      "successful_emergencies": 195,
+      "specializations": [
+        "Advanced Life Support",
+        "Trauma Care"
+      ]
+    },
+    "fuel_level": 92,
+    "last_maintenance": "2024-01-10",
+    "next_maintenance": "2024-04-10",
+    "is_active": true
+  },
+  {
+    "id": "amb_003",
+    "plate_number": "DL-01-EF-9012",
+    "type": "ADVANCED",
+    "equipment_level": "ADVANCED",
+    "status": "ON_DUTY",
+    "lat": 28.6,
+    "lng": 77.2,
+    "driver": {
+      "id": "drv_003",
+      "name": "Amit Sharma",
+      "phone": "+91-98765-43212",
+      "email": "amit.sharma@aapat.com",
+      "experience_years": 10,
+      "rating": 4.8,
+      "total_emergencies": 300,
+      "successful_emergencies": 290,
+      "specializations": [
+        "Critical Care",
+        "Pediatric Emergency"
+      ]
+    },
+    "fuel_level": 78,
+    "last_maintenance": "2024-01-05",
+    "next_maintenance": "2024-04-05",
+    "is_active": true
+  },
+  {
+    "id": "amb_004",
+    "plate_number": "DL-01-GH-3456",
+    "type": "CRITICAL_CARE",
+    "equipment_level": "CRITICAL_CARE",
+    "status": "AVAILABLE",
+    "lat": 28.63,
+    "lng": 77.22,
+    "driver": {
+      "id": "drv_004",
+      "name": "Vikram Patel",
+      "phone": "+91-98765-43213",
+      "email": "vikram.patel@aapat.com",
+      "experience_years": 12,
+      "rating": 4.9,
+      "total_emergencies": 400,
+      "successful_emergencies": 395,
+      "specializations": [
+        "Critical Care",
+        "Cardiac Emergency",
+        "Trauma Care"
+      ]
+    },
+    "fuel_level": 88,
+    "last_maintenance": "2024-01-12",
+    "next_maintenance": "2024-04-12",
+    "is_active": true
+  },
+  {
+    "id": "amb_005",
+    "plate_number": "DL-01-IJ-7890",
+    "type": "BASIC",
+    "equipment_level": "BASIC",
+    "status": "MAINTENANCE",
+    "lat": 28.64,
+    "lng": 77.23,
+    "driver": null,
+    "fuel_level": 45,
+    "last_maintenance": "2024-01-20",
+    "next_maintenance": "2024-02-20",
+    "is_active": true
+  },
+  {
+    "id": "amb_006",
+    "plate_number": "DL-01-KL-2468",
+    "type": "INTERMEDIATE",
+    "equipment_level": "INTERMEDIATE",
+    "status": "AVAILABLE",
+    "lat": 28.61,
+    "lng": 77.19,
+    "driver": {
+      "id": "drv_005",
+      "name": "Ravi Verma",
+      "phone": "+91-98765-43214",
+      "email": "ravi.verma@aapat.com",
+      "experience_years": 3,
+      "rating": 4.2,
+      "total_emergencies": 80,
+      "successful_emergencies": 75,
+      "specializations": [
+        "Basic Life Support"
+      ]
+    },
+    "fuel_level": 95,
+    "last_maintenance": "2024-01-08",
+    "next_maintenance": "2024-04-08",
+    "is_active": true
+  }
+]

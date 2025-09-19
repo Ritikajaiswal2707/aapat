@@ -13,7 +13,9 @@ const razorpay = new Razorpay({
 
 class PaymentService {
   constructor() {
-    this.isConfigured = razorpayKeyId && razorpayKeySecret;
+    // Force mock mode for testing
+    this.isConfigured = false; // Always use mock mode for testing
+    console.log('💳 Payment Service: Running in MOCK MODE for testing');
   }
 
   // Create payment order for emergency service

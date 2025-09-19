@@ -13,7 +13,9 @@ const client = twilio(accountSid, authToken);
 
 class SMSService {
   constructor() {
-    this.isConfigured = accountSid && authToken && twilioPhoneNumber;
+    // Force mock mode for testing
+    this.isConfigured = false; // Always use mock mode for testing
+    console.log('📱 SMS Service: Running in MOCK MODE for testing');
   }
 
   // Send emergency SMS to patient's emergency contacts

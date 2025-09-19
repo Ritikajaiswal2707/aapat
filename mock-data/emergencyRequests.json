@@ -1,0 +1,50 @@
+[
+  {
+    "id": "req_001",
+    "patient_id": "pat_001",
+    "patient_name": "Priya Sharma",
+    "patient_phone": "+91-98765-12345",
+    "emergency_type": "Heart Attack",
+    "priority_level": 1,
+    "address": "Connaught Place, New Delhi",
+    "lat": 28.6304,
+    "lng": 77.2177,
+    "status": "ASSIGNED",
+    "assigned_ambulance_id": "amb_001",
+    "assigned_driver": "Rajesh Kumar",
+    "created_at": "2025-09-19T05:03:39.857Z",
+    "estimated_arrival": "8 minutes"
+  },
+  {
+    "id": "req_002",
+    "patient_id": "pat_002",
+    "patient_name": "Amit Kumar",
+    "patient_phone": "+91-98765-23456",
+    "emergency_type": "Road Accident",
+    "priority_level": 2,
+    "address": "India Gate, New Delhi",
+    "lat": 28.6129,
+    "lng": 77.2295,
+    "status": "DISPATCHED",
+    "assigned_ambulance_id": "amb_002",
+    "assigned_driver": "Suresh Singh",
+    "created_at": "2025-09-19T04:58:39.857Z",
+    "estimated_arrival": "12 minutes"
+  },
+  {
+    "id": "req_003",
+    "patient_id": "pat_003",
+    "patient_name": "Sneha Patel",
+    "patient_phone": "+91-98765-34567",
+    "emergency_type": "Breathing Problems",
+    "priority_level": 2,
+    "address": "Lajpat Nagar, New Delhi",
+    "lat": 28.57,
+    "lng": 77.24,
+    "status": "AMBULANCE_ARRIVED",
+    "assigned_ambulance_id": "amb_004",
+    "assigned_driver": "Vikram Patel",
+    "created_at": "2025-09-19T04:53:39.857Z",
+    "estimated_arrival": "0 minutes"
+  }
+]
