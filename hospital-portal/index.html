@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aapat Hospital Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #dc2626;
+            --secondary-color: #1f2937;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+        }
+
+        body {
+            background-color: #f8fafc;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #b91c1c);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-available { background-color: var(--success-color); }
+        .status-occupied { background-color: var(--danger-color); }
+        .status-maintenance { background-color: var(--warning-color); }
+
+        .emergency-alert {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            border-left: 4px solid var(--danger-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .patient-card {
+            border-left: 4px solid var(--info-color);
+            transition: all 0.3s ease;
+        }
+
+        .patient-card:hover {
+            border-left-color: var(--primary-color);
+            transform: translateX(5px);
+        }
+
+        .priority-critical { border-left-color: var(--danger-color) !important; }
+        .priority-high { border-left-color: var(--warning-color) !important; }
+        .priority-medium { border-left-color: var(--info-color) !important; }
+        .priority-low { border-left-color: var(--success-color) !important; }
+
+        .bed-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .bed-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .bed-card.occupied {
+            background: #fef2f2;
+            border: 2px solid var(--danger-color);
+        }
+
+        .bed-card.available {
+            background: #f0fdf4;
+            border: 2px solid var(--success-color);
+        }
+
+        .bed-card.maintenance {
+            background: #fffbeb;
+            border: 2px solid var(--warning-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .real-time-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success-color);
+            border-radius: 50%;
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-hospital"></i> Aapat Hospital Portal
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="real-time-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>Live Updates</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3">
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-tachometer-alt"></i> Dashboard</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary active" onclick="showSection('overview')">
+                                <i class="fas fa-chart-pie"></i> Overview
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showSection('patients')">
+                                <i class="fas fa-users"></i> Incoming Patients
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showSection('beds')">
+                                <i class="fas fa-bed"></i> Bed Management
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showSection('equipment')">
+                                <i class="fas fa-tools"></i> Equipment Status
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="showSection('alerts')">
+                                <i class="fas fa-bell"></i> Alerts
+                                <span class="notification-badge" id="alertCount">3</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Quick Stats</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6 mb-3">
+                                <div class="text-success">
+                                    <i class="fas fa-bed fa-2x"></i>
+                                    <div class="fw-bold" id="availableBeds">12</div>
+                                    <small>Available Beds</small>
+                                </div>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <div class="text-danger">
+                                    <i class="fas fa-user-injured fa-2x"></i>
+                                    <div class="fw-bold" id="incomingPatients">5</div>
+                                    <small>Incoming</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-info">
+                                    <i class="fas fa-ambulance fa-2x"></i>
+                                    <div class="fw-bold" id="activeAmbulances">8</div>
+                                    <small>Active</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-warning">
+                                    <i class="fas fa-clock fa-2x"></i>
+                                    <div class="fw-bold" id="avgWaitTime">15</div>
+                                    <small>Min Wait</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9">
+                <!-- Overview Section -->
+                <div id="overview-section" class="content-section">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-hospital text-primary fa-3x mb-3"></i>
+                                    <h4 class="text-primary" id="totalBeds">45</h4>
+                                    <p class="text-muted">Total Beds</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-bed text-success fa-3x mb-3"></i>
+                                    <h4 class="text-success" id="occupiedBeds">33</h4>
+                                    <p class="text-muted">Occupied</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-md text-info fa-3x mb-3"></i>
+                                    <h4 class="text-info" id="doctorsOnDuty">12</h4>
+                                    <p class="text-muted">Doctors On Duty</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-ambulance text-warning fa-3x mb-3"></i>
+                                    <h4 class="text-warning" id="emergencyCases">7</h4>
+                                    <p class="text-muted">Emergency Cases</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Alerts -->
+                    <div class="card emergency-alert mb-4">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Emergency Alerts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="emergencyAlerts">
+                                <!-- Emergency alerts will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Incoming Patients Section -->
+                <div id="patients-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-users"></i> Incoming Patients</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="incomingPatientsList">
+                                <!-- Patient cards will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bed Management Section -->
+                <div id="beds-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bed"></i> Bed Management</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="bed-grid" id="bedGrid">
+                                <!-- Bed cards will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equipment Status Section -->
+                <div id="equipment-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-tools"></i> Equipment Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="equipmentList">
+                                <!-- Equipment status will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts Section -->
+                <div id="alerts-section" class="content-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-bell"></i> System Alerts</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="systemAlerts">
+                                <!-- System alerts will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        // Global variables
+        let socket;
+        let hospitalId = 'hospital-123'; // This should be dynamic based on login
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSocket();
+            loadInitialData();
+            startRealTimeUpdates();
+        });
+
+        // Socket connection
+        function initializeSocket() {
+            socket = io('http://localhost:3001');
+            
+            socket.on('connect', () => {
+                console.log('Connected to hospital service');
+                socket.emit('join_hospital', hospitalId);
+            });
+
+            socket.on('disconnect', () => {
+                console.log('Disconnected from hospital service');
+            });
+
+            socket.on('new_emergency', (emergency) => {
+                addEmergencyAlert(emergency);
+                updateIncomingPatients();
+            });
+
+            socket.on('ambulance_arrived', (data) => {
+                showNotification(`Ambulance ${data.ambulance_id} has arrived`, 'success');
+                updateIncomingPatients();
+            });
+
+            socket.on('bed_availability_update', (data) => {
+                updateBedStatus(data);
+            });
+
+            socket.on('patient_admitted', (data) => {
+                showNotification(`Patient ${data.patient_name} admitted to ${data.department}`, 'info');
+                updateBedStatus();
+            });
+        }
+
+        // Load initial data
+        async function loadInitialData() {
+            try {
+                // Load hospital data
+                const response = await fetch(`http://localhost:3000/api/hospitals/${hospitalId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateHospitalStats(data.data);
+                }
+
+                // Load incoming patients
+                updateIncomingPatients();
+                
+                // Load bed status
+                updateBedStatus();
+                
+                // Load equipment status
+                updateEquipmentStatus();
+                
+            } catch (error) {
+                console.error('Error loading initial data:', error);
+            }
+        }
+
+        // Update hospital statistics
+        function updateHospitalStats(hospital) {
+            document.getElementById('totalBeds').textContent = hospital.total_beds;
+            document.getElementById('occupiedBeds').textContent = hospital.total_beds - hospital.available_beds;
+            document.getElementById('availableBeds').textContent = hospital.available_beds;
+        }
+
+        // Update incoming patients
+        async function updateIncomingPatients() {
+            try {
+                const response = await fetch('http://localhost:3000/api/emergency/recent?limit=10');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayIncomingPatients(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading incoming patients:', error);
+            }
+        }
+
+        // Display incoming patients
+        function displayIncomingPatients(patients) {
+            const container = document.getElementById('incomingPatientsList');
+            container.innerHTML = '';
+
+            patients.forEach(patient => {
+                const priorityClass = `priority-${getPriorityClass(patient.priority_level)}`;
+                const card = document.createElement('div');
+                card.className = `card patient-card ${priorityClass} mb-3`;
+                card.innerHTML = `
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h6 class="card-title">
+                                    <i class="fas fa-user-injured"></i> ${patient.patient_info?.name || 'Unknown Patient'}
+                                </h6>
+                                <p class="card-text">
+                                    <strong>Type:</strong> ${patient.emergency_type}<br>
+                                    <strong>Symptoms:</strong> ${patient.symptoms || 'Not specified'}<br>
+                                    <strong>Location:</strong> ${patient.address}
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="badge bg-${getPriorityColor(patient.priority_level)}">
+                                    ${getPriorityText(patient.priority_level)}
+                                </span>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        ETA: ${patient.estimated_arrival || 'Calculating...'}
+                                    </small>
+                                </div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-primary" onclick="prepareForPatient('${patient.id}')">
+                                        <i class="fas fa-bed"></i> Prepare Bed
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Update bed status
+        async function updateBedStatus() {
+            try {
+                const response = await fetch(`http://localhost:3000/api/hospitals/${hospitalId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayBedStatus(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading bed status:', error);
+            }
+        }
+
+        // Display bed status
+        function displayBedStatus(hospital) {
+            const container = document.getElementById('bedGrid');
+            container.innerHTML = '';
+
+            // General beds
+            for (let i = 1; i <= hospital.total_beds; i++) {
+                const isOccupied = i > (hospital.total_beds - hospital.available_beds);
+                const bedCard = document.createElement('div');
+                bedCard.className = `bed-card ${isOccupied ? 'occupied' : 'available'}`;
+                bedCard.innerHTML = `
+                    <i class="fas fa-bed fa-2x mb-2"></i>
+                    <div class="fw-bold">Bed ${i}</div>
+                    <div class="small">${isOccupied ? 'Occupied' : 'Available'}</div>
+                `;
+                container.appendChild(bedCard);
+            }
+
+            // ICU beds
+            for (let i = 1; i <= hospital.icu_beds; i++) {
+                const isOccupied = i > (hospital.icu_beds - hospital.available_icu_beds);
+                const bedCard = document.createElement('div');
+                bedCard.className = `bed-card ${isOccupied ? 'occupied' : 'available'}`;
+                bedCard.innerHTML = `
+                    <i class="fas fa-heartbeat fa-2x mb-2"></i>
+                    <div class="fw-bold">ICU Bed ${i}</div>
+                    <div class="small">${isOccupied ? 'Occupied' : 'Available'}</div>
+                `;
+                container.appendChild(bedCard);
+            }
+        }
+
+        // Update equipment status
+        async function updateEquipmentStatus() {
+            const equipment = [
+                { name: 'Defibrillator', status: 'operational', count: 5 },
+                { name: 'Ventilator', status: 'operational', count: 8 },
+                { name: 'ECG Machine', status: 'maintenance', count: 3 },
+                { name: 'Oxygen Cylinder', status: 'operational', count: 12 },
+                { name: 'Stretcher', status: 'operational', count: 15 }
+            ];
+
+            const container = document.getElementById('equipmentList');
+            container.innerHTML = '';
+
+            equipment.forEach(item => {
+                const statusColor = item.status === 'operational' ? 'success' : 'warning';
+                const card = document.createElement('div');
+                card.className = 'card mb-2';
+                card.innerHTML = `
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h6 class="mb-0">${item.name}</h6>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge bg-${statusColor}">${item.status}</span>
+                            </div>
+                            <div class="col-md-3 text-end">
+                                <strong>${item.count}</strong>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Add emergency alert
+        function addEmergencyAlert(emergency) {
+            const container = document.getElementById('emergencyAlerts');
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-danger alert-dismissible fade show';
+            alert.innerHTML = `
+                <strong>${emergency.emergency_type} Emergency!</strong><br>
+                Patient: ${emergency.patient_info?.name || 'Unknown'}<br>
+                Location: ${emergency.address}<br>
+                Priority: ${getPriorityText(emergency.priority)}<br>
+                <small>Time: ${new Date(emergency.timestamp).toLocaleString()}</small>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            container.appendChild(alert);
+
+            // Update alert count
+            const alertCount = document.getElementById('alertCount');
+            alertCount.textContent = parseInt(alertCount.textContent) + 1;
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+
+        // Prepare for patient
+        function prepareForPatient(patientId) {
+            showNotification('Preparing bed for incoming patient...', 'info');
+            // Here you would implement the bed preparation logic
+        }
+
+        // Section navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionName + '-section').style.display = 'block';
+
+            // Update active button
+            document.querySelectorAll('.btn-outline-primary').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Utility functions
+        function getPriorityClass(priority) {
+            const classes = { 1: 'critical', 2: 'high', 3: 'medium', 4: 'low' };
+            return classes[priority] || 'low';
+        }
+
+        function getPriorityColor(priority) {
+            const colors = { 1: 'danger', 2: 'warning', 3: 'info', 4: 'success' };
+            return colors[priority] || 'secondary';
+        }
+
+        function getPriorityText(priority) {
+            const texts = { 1: 'CRITICAL', 2: 'HIGH', 3: 'MEDIUM', 4: 'LOW' };
+            return texts[priority] || 'UNKNOWN';
+        }
+
+        // Start real-time updates
+        function startRealTimeUpdates() {
+            setInterval(() => {
+                updateIncomingPatients();
+                updateBedStatus();
+            }, 30000); // Update every 30 seconds
+        }
+    </script>
+</body>
+</html>

@@ -26,6 +26,12 @@ app.use(limiter);
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, 'frontend/build')));
 
+// Serve mobile app files
+app.use('/mobile', express.static('mobile-apps'));
+
+// Serve hospital portal
+app.use('/hospital', express.static('hospital-portal'));
+
 // Service URLs
 const services = {
   emergency: process.env.EMERGENCY_SERVICE_URL || 'http://emergency-service:3001',
@@ -74,6 +80,20 @@ app.use('/api/communication', createProxy(services.communication));
 app.use('/api/billing', createProxy(services.billing));
 app.use('/api/analytics', createProxy(services.analytics));
 
+// Mobile app routes
+app.get('/mobile/emergency', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mobile-apps/PublicEmergencyApp/App.tsx'));
+});
+
+app.get('/mobile/driver', (req, res) => {
+  res.sendFile(path.join(__dirname, 'mobile-apps/DriverApp/App.tsx'));
+});
+
+// Hospital portal route
+app.get('/hospital', (req, res) => {
+  res.sendFile(path.join(__dirname, 'hospital-portal/index.html'));
+});
+
 // Catch all handler: send back React's index.html file for any non-API routes
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
@@ -83,4 +103,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log('🚑 Aapat API Gateway running on port ' + PORT);
   console.log('🔍 Health check: http://localhost:' + PORT + '/health');
+  console.log('📱 Mobile apps: http://localhost:' + PORT + '/mobile');
+  console.log('🏥 Hospital portal: http://localhost:' + PORT + '/hospital');
 });

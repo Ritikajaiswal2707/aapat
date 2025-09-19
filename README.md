@@ -63,16 +63,23 @@ A comprehensive, real-time emergency response platform built with microservices 
 - **Priority Management**: Emergency priority visualization
 
 #### 2. Public Emergency App (Mobile)
-- **One-tap Emergency**: Instant emergency request
-- **GPS Integration**: Automatic location detection
-- **Real-time Tracking**: Live ambulance location
-- **Emergency Contacts**: Quick contact management
+- **One-tap Emergency**: Instant emergency request with haptic feedback
+- **GPS Integration**: Automatic location detection with manual override
+- **Voice Commands**: 15+ Indian languages support
+- **Offline Mode**: SMS/IVR fallback for critical situations
+- **Real-time Tracking**: Live ambulance location with ETA
+- **Emergency Contacts**: Quick contact management and SMS notifications
+- **Medical History**: Integration with patient medical records
+- **Hospital Selection**: Real-time bed availability and hospital selection
 
 #### 3. Driver/Paramedic App (Mobile)
-- **Emergency Notifications**: Real-time call alerts
+- **Emergency Notifications**: Real-time call alerts with sound/vibration
 - **Navigation Integration**: GPS routing and navigation
-- **Patient Information**: Access to patient records
-- **Status Updates**: Real-time status reporting
+- **Patient Information**: Access to patient records and vitals
+- **Status Updates**: Real-time status reporting (5 states)
+- **Quick Actions**: Emergency contacts, navigation, equipment check
+- **Offline Support**: Critical functions work without internet
+- **Route Optimization**: AI-powered route suggestions
 
 #### 4. Hospital Staff Portal (Web)
 - **Patient Management**: Incoming patient notifications
@@ -144,8 +151,9 @@ docker-compose up -d
 
 3. **Access the applications:**
 - **API Gateway**: http://localhost:3000
-- **Emergency Dashboard**: http://localhost:3001
-- **Frontend**: http://localhost:3000 (React app)
+- **Emergency Dashboard**: http://localhost:3000 (React app)
+- **Mobile Apps**: http://localhost:3000/mobile
+- **Hospital Portal**: http://localhost:3000/hospital
 
 ### Service Endpoints
 
