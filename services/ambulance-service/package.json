@@ -8,21 +8,28 @@
     "dev": "nodemon app.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "axios": "^1.12.2",
     "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-rate-limit": "^6.11.2",
+    "helmet": "^7.2.0",
+    "joi": "^17.13.3",
+    "moment": "^2.29.4",
     "pg": "^8.11.3",
-    "socket.io": "^4.7.2",
     "redis": "^4.6.8",
-    "axios": "^1.5.0",
-    "helmet": "^7.0.0",
-    "express-rate-limit": "^6.10.0",
-    "joi": "^17.9.2",
-    "moment": "^2.29.4"
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
-  "keywords": ["ambulance", "emergency", "fleet", "tracking", "gps"],
+  "keywords": [
+    "ambulance",
+    "emergency",
+    "fleet",
+    "tracking",
+    "gps"
+  ],
   "author": "Aapat Team",
   "license": "MIT"
 }
