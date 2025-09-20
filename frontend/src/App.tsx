@@ -70,6 +70,29 @@ function App() {
   const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'emergencies' | 'ambulances' | 'hospitals'>('overview');
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [formName, setFormName] = useState('Test Patient');
+  const [formPhone, setFormPhone] = useState('+919876543210');
+  const [formType, setFormType] = useState<'CARDIAC' | 'TRAUMA' | 'RESPIRATORY' | 'NEUROLOGICAL'>('CARDIAC');
+  const [formAddress, setFormAddress] = useState('Test Location, Bangalore');
+  const [formSymptoms, setFormSymptoms] = useState('Chest pain');
+  const [formConscious, setFormConscious] = useState(true);
+  const [formBreathing, setFormBreathing] = useState(true);
+  const [formPainLevel, setFormPainLevel] = useState(5);
+
+  // Filters & detail drawer state
+  const [filterType, setFilterType] = useState<string>('ALL');
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
+  const [searchText, setSearchText] = useState<string>('');
+  const [selectedEmergency, setSelectedEmergency] = useState<Emergency | null>(null);
+  // Derived filtered emergencies
+  const filteredEmergencies = emergencies.filter(e => {
+    const typeOk = filterType === 'ALL' || e.emergency_type === filterType;
+    const statusOk = filterStatus === 'ALL' || (e.status || '').toUpperCase() === filterStatus;
+    const text = `${e.emergency_type} ${e.address} ${e.patient_info?.name || ''}`.toLowerCase();
+    const searchOk = searchText.trim() === '' || text.includes(searchText.toLowerCase());
+    return typeOk && statusOk && searchOk;
+  });
 
   useEffect(() => {
     // Initialize socket connection
@@ -211,6 +234,106 @@ function App() {
     }
   };
 
+  const submitCustomEmergency = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const payload = {
+      caller_phone: formPhone,
+      patient_info: {
+        name: formName,
+        age: 35,
+        gender: 'MALE',
+        blood_type: 'O+'
+      },
+      location: {
+        latitude: 12.9716 + (Math.random() - 0.5) * 0.01,
+        longitude: 77.5946 + (Math.random() - 0.5) * 0.01
+      },
+      address: formAddress,
+      emergency_type: formType,
+      symptoms: formSymptoms,
+      conscious: formConscious,
+      breathing: formBreathing,
+      pain_level: formPainLevel
+    };
+
+    try {
+      const response = await fetch('http://localhost:3000/api/emergency/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('✅ Custom test emergency created!');
+        setShowCustomForm(false);
+        updateMetrics();
+        fetchRecentEmergencies();
+      } else {
+        alert('❌ Failed to create emergency: ' + result.message);
+      }
+    } catch (error: any) {
+      alert('❌ Error creating emergency: ' + error.message);
+    }
+  };
+
+  const updateEmergencyStatusLocal = (id: string, newStatus: string) => {
+    setEmergencies(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } as any : e));
+  };
+
+  const closeDetails = () => setSelectedEmergency(null);
+
+  // Mock driver assignment helpers
+  const toRad = (value: number) => (value * Math.PI) / 180;
+  const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
+    const R = 6371; // km
+    const dLat = toRad(b.lat - a.lat);
+    const dLon = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const sinDLat = Math.sin(dLat / 2);
+    const sinDLon = Math.sin(dLon / 2);
+    const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  };
+
+  const estimateEtaMinutes = (distanceKm: number) => {
+    // Mock average urban speed ~30 km/h
+    const speedKmh = 30;
+    return Math.max(2, Math.round((distanceKm / speedKmh) * 60));
+  };
+
+  const assignNearestAmbulance = (emergencyId: string) => {
+    setEmergencies(prev => {
+      const emergency = prev.find(e => e.id === emergencyId);
+      if (!emergency) return prev;
+      if (!emergency.location) return prev;
+
+      let bestAmbulance: Ambulance | null = null;
+      let bestDistance = Number.POSITIVE_INFINITY;
+      ambulances.forEach(amb => {
+        const d = haversineKm(emergency.location, amb.location);
+        if (d < bestDistance) {
+          bestDistance = d;
+          bestAmbulance = amb;
+        }
+      });
+
+      if (!bestAmbulance || !isFinite(bestDistance)) return prev;
+      const eta = estimateEtaMinutes(bestDistance);
+
+      return prev.map(e =>
+        e.id === emergencyId
+          ? ({
+              ...e,
+              status: 'ASSIGNED',
+              assigned_ambulance_id: bestAmbulance!.id,
+              estimated_arrival: `${eta} min`
+            } as any)
+          : e
+      );
+    });
+  };
+
   const getPriorityColor = (priority: number) => {
     switch (priority) {
       case 1: return '#dc2626'; // Critical - Red
@@ -260,7 +383,7 @@ function App() {
           <p style={{ margin: '5px 0 0 0' }}>Real-time Emergency Response Platform</p>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ 
+            <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
             gap: '10px',
@@ -270,9 +393,9 @@ function App() {
               width: '10px',
               height: '10px',
               borderRadius: '50%',
-              background: isConnected ? '#10b981' : '#ef4444'
+              background: isConnected ? '#10b981' : '#f59e0b'
             }}></div>
-            {isConnected ? 'Connected' : 'Disconnected'}
+            {isConnected ? 'Connected' : 'Mock Mode'}
           </div>
         </div>
       </header>
@@ -408,7 +531,7 @@ function App() {
           </div>
         </div>
 
-        {/* Recent Emergencies */}
+        {/* Recent Emergencies (with filters and actions) */}
         <div style={{
           background: 'white',
           padding: '20px',
@@ -417,11 +540,35 @@ function App() {
           marginBottom: '30px'
         }}>
           <h3 style={{ marginTop: 0, color: '#374151' }}>🚨 Recent Emergency Requests</h3>
-          {emergencies.length === 0 ? (
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+            <input
+              placeholder="Search (type, address, name)"
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+              style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: '8px', flex: '1 1 240px' }}
+            />
+            <select value={filterType} onChange={e => setFilterType(e.target.value)}
+              style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+              <option value="ALL">All Types</option>
+              <option value="CARDIAC">CARDIAC</option>
+              <option value="TRAUMA">TRAUMA</option>
+              <option value="RESPIRATORY">RESPIRATORY</option>
+              <option value="NEUROLOGICAL">NEUROLOGICAL</option>
+            </select>
+            <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
+              style={{ padding: '10px', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
+              <option value="ALL">All Status</option>
+              <option value="PENDING">PENDING</option>
+              <option value="ASSIGNED">ASSIGNED</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="COMPLETED">COMPLETED</option>
+            </select>
+          </div>
+          {filteredEmergencies.length === 0 ? (
             <p style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>No recent emergencies</p>
           ) : (
             <div style={{ marginTop: '15px' }}>
-              {emergencies.map((emergency, index) => (
+              {filteredEmergencies.map((emergency, index) => (
                 <div key={emergency.id} style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -445,15 +592,41 @@ function App() {
                         {getPriorityText(emergency.priority)}
                       </span>
                       <span style={{ fontWeight: 'bold' }}>{emergency.emergency_type}</span>
+                      <span style={{
+                        background: (emergency.status || 'PENDING') === 'COMPLETED' ? '#10b981' : '#f59e0b',
+                        color: 'white',
+                        padding: '2px 6px',
+                        borderRadius: '3px',
+                        fontSize: '0.7rem'
+                      }}>
+                        {emergency.status || 'PENDING'}
+                      </span>
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: '5px' }}>
-                      {emergency.address}
-                    </div>
+                    <div style={{ color: '#6b7280', fontSize: '0.9rem', marginTop: '5px' }}>{emergency.address}</div>
+                    {emergency.assigned_ambulance_id && (
+                      <div style={{ color: '#3b82f6', fontSize: '0.9rem', marginTop: '4px' }}>
+                        Assigned: {emergency.assigned_ambulance_id} • ETA: {emergency.estimated_arrival || '—'}
+                      </div>
+                    )}
                     {emergency.patient_info?.name && (
                       <div style={{ color: '#374151', fontSize: '0.9rem', marginTop: '2px' }}>
                         Patient: {emergency.patient_info.name}
                       </div>
                     )}
+                    <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <button onClick={() => setSelectedEmergency(emergency)} style={{
+                        background: 'white', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer'
+                      }}>Details</button>
+                      <button onClick={() => assignNearestAmbulance(emergency.id)} style={{
+                        background: '#3b82f6', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
+                      }}>Assign</button>
+                      <button onClick={() => updateEmergencyStatusLocal(emergency.id, 'IN_PROGRESS')} style={{
+                        background: '#8b5cf6', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
+                      }}>Start</button>
+                      <button onClick={() => updateEmergencyStatusLocal(emergency.id, 'COMPLETED')} style={{
+                        background: '#10b981', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
+                      }}>Complete</button>
+                    </div>
                   </div>
                   <div style={{ textAlign: 'right', color: '#6b7280', fontSize: '0.8rem' }}>
                     {new Date(emergency.timestamp).toLocaleTimeString()}
@@ -698,6 +871,128 @@ function App() {
           </div>
         )}
       </main>
+      {/* Detail Drawer */}
+      {selectedEmergency && (
+        <div style={{
+          position: 'fixed', right: 0, top: 0, height: '100vh', width: '380px', background: 'white',
+          boxShadow: '-2px 0 8px rgba(0,0,0,0.15)', padding: '20px', zIndex: 50, overflowY: 'auto'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0 }}>Emergency Details</h3>
+            <button onClick={closeDetails} style={{ background: 'transparent', border: 'none', fontSize: '1.2rem', cursor: 'pointer' }}>✖</button>
+          </div>
+          <div style={{ marginTop: '12px', color: '#374151' }}>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <span style={{ background: getPriorityColor(selectedEmergency.priority), color: 'white', padding: '4px 8px', borderRadius: '6px', fontWeight: 'bold', fontSize: '0.8rem' }}>
+                {getPriorityText(selectedEmergency.priority)}
+              </span>
+              <span style={{ fontWeight: 'bold' }}>{selectedEmergency.emergency_type}</span>
+            </div>
+            <div style={{ marginTop: '8px' }}>Address: {selectedEmergency.address}</div>
+            {selectedEmergency.patient_info?.name && (
+              <div style={{ marginTop: '4px' }}>Patient: {selectedEmergency.patient_info.name}</div>
+            )}
+            <div style={{ marginTop: '4px' }}>Status: <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>{selectedEmergency.status || 'PENDING'}</span></div>
+            <div style={{ marginTop: '4px' }}>Time: {new Date(selectedEmergency.timestamp).toLocaleString()}</div>
+            <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px' }}>
+              <button onClick={() => assignNearestAmbulance(selectedEmergency.id)} style={{ background: '#3b82f6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Assign</button>
+              <button onClick={() => updateEmergencyStatusLocal(selectedEmergency.id, 'IN_PROGRESS')} style={{ background: '#8b5cf6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Start</button>
+              <button onClick={() => updateEmergencyStatusLocal(selectedEmergency.id, 'COMPLETED')} style={{ background: '#10b981', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Complete</button>
+            </div>
+          </div>
+        </div>
+      )}
+          {/* Custom test emergency form */}
+          <div style={{
+            background: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            marginTop: '20px'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, color: '#374151' }}>📝 Create Custom Test Emergency</h3>
+              <button
+                onClick={() => setShowCustomForm(v => !v)}
+                style={{
+                  background: 'linear-gradient(to right, #e53e3e, #dc2626)',
+                  color: 'white',
+                  padding: '8px 14px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                {showCustomForm ? 'Hide Form' : 'Open Form'}
+              </button>
+            </div>
+            {showCustomForm && (
+              <form onSubmit={submitCustomEmergency} style={{ marginTop: '15px', display: 'grid', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+                  <div>
+                    <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Patient Name</label>
+                    <input value={formName} onChange={e => setFormName(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Caller Phone</label>
+                    <input value={formPhone} onChange={e => setFormPhone(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Emergency Type</label>
+                    <select value={formType} onChange={e => setFormType(e.target.value as any)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+                      <option value="CARDIAC">CARDIAC</option>
+                      <option value="TRAUMA">TRAUMA</option>
+                      <option value="RESPIRATORY">RESPIRATORY</option>
+                      <option value="NEUROLOGICAL">NEUROLOGICAL</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Address</label>
+                    <input value={formAddress} onChange={e => setFormAddress(e.target.value)} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Symptoms</label>
+                  <textarea value={formSymptoms} onChange={e => setFormSymptoms(e.target.value)} rows={3} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', alignItems: 'center' }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input type="checkbox" checked={formConscious} onChange={e => setFormConscious(e.target.checked)} />
+                    Conscious
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <input type="checkbox" checked={formBreathing} onChange={e => setFormBreathing(e.target.checked)} />
+                    Breathing
+                  </label>
+                  <div>
+                    <label style={{ display: 'block', color: '#374151', marginBottom: '6px' }}>Pain Level: {formPainLevel}</label>
+                    <input type="range" min={1} max={10} value={formPainLevel} onChange={e => setFormPainLevel(parseInt(e.target.value))} style={{ width: '100%' }} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                  <button type="button" onClick={() => setShowCustomForm(false)} style={{
+                    background: 'transparent',
+                    color: '#e53e3e',
+                    padding: '10px 16px',
+                    border: '2px solid #e53e3e',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}>Cancel</button>
+                  <button type="submit" style={{
+                    background: 'linear-gradient(to right, #f59e0b, #d97706)',
+                    color: 'white',
+                    padding: '10px 16px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}>Submit Emergency</button>
+                </div>
+              </form>
+            )}
+          </div>
       
       <footer style={{
         background: '#1f2937',

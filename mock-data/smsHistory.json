@@ -418,5 +418,137 @@
     "type": "EMERGENCY_ALERT",
     "priority": "HIGH",
     "emergency_id": "persistence_test_001"
+  },
+  {
+    "id": "sms_1758265969271_ny7eeb5zt",
+    "to": "+919876543210",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Heart Attack\nPatient: Test Patient\nLocation: Test Location\nTime: 19/9/2025, 12:42:49 pm\n\nAmbulance has been dispatched. ETA: 5 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:49.271Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH"
+  },
+  {
+    "id": "sms_1758265969295_hp76awonb",
+    "to": {
+      "name": "Emergency Contact",
+      "phone": "+91-98765-12345"
+    },
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Heart Attack\nPatient: Test Patient\nLocation: Test Location, New Delhi\nTime: 19/9/2025, 12:42:49 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:49.295Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "test_emergency_001"
+  },
+  {
+    "id": "sms_1758265973815_qiwzzwjst",
+    "to": "+91-98765-00000",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 0\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.815Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_0"
+  },
+  {
+    "id": "sms_1758265973818_9snd5hhtm",
+    "to": "+91-98765-00001",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 1\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.818Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_1"
+  },
+  {
+    "id": "sms_1758265973820_ajz5l8rrq",
+    "to": "+91-98765-00002",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 2\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.820Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_2"
+  },
+  {
+    "id": "sms_1758265973822_r9t0c2gla",
+    "to": "+91-98765-00003",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 3\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.822Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_3"
+  },
+  {
+    "id": "sms_1758265973825_8puhwhg3v",
+    "to": "+91-98765-00004",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 4\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.825Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_4"
+  },
+  {
+    "id": "sms_1758265973829_l00jrrhsh",
+    "to": "+91-98765-00005",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 5\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.829Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_5"
+  },
+  {
+    "id": "sms_1758265973831_ayyep4zyk",
+    "to": "+91-98765-00006",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 6\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.831Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_6"
+  },
+  {
+    "id": "sms_1758265973833_ndteszybr",
+    "to": "+91-98765-00007",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 7\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.833Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_7"
+  },
+  {
+    "id": "sms_1758265973835_vxmhnbs4h",
+    "to": "+91-98765-00008",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 8\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.835Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_8"
+  },
+  {
+    "id": "sms_1758265973838_e78tizsk8",
+    "to": "+91-98765-00009",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Test Patient 9\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.838Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "perf_test_9"
+  },
+  {
+    "id": "sms_1758265973853_i7cdxuixz",
+    "to": "+91-98765-99999",
+    "message": "🚨 EMERGENCY ALERT 🚨\n\nEmergency Type: Test Emergency\nPatient: Persistence Test Patient\nLocation: Test Location\nTime: 19/9/2025, 12:42:53 pm\n\nAmbulance has been dispatched. ETA: 5-10 minutes\nDriver: Driver (AMB-001)\n\nPlease contact emergency services if needed.\n- Aapat Emergency Services",
+    "status": "SENT",
+    "sent_at": "2025-09-19T07:12:53.853Z",
+    "type": "EMERGENCY_ALERT",
+    "priority": "HIGH",
+    "emergency_id": "persistence_test_001"
   }
 ]

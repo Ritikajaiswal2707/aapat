@@ -499,8 +499,8 @@ app.get('/mobile/driver', (req, res) => {
   `);
 });
 
-// Catch all handler
-app.get('*', (req, res) => {
+// Catch-all handler for non-API routes (Express v5 compatible)
+app.get(/^(?!\/api\/).*/, (req, res) => {
   res.sendFile(path.join(__dirname, 'frontend/build', 'index.html'));
 });
 
