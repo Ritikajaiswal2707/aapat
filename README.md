@@ -32,6 +32,14 @@ Aapat is a comprehensive emergency response platform that connects patients with
 - Multi-factor scoring (0-100)
 - Top 3 recommendations per emergency
 
+✅ **Hospital Bed Reservation** 🆕
+- Reserve beds while ambulance is en route
+- Real-time bed availability tracking
+- Automatic expiry system (ETA + 15 min buffer)
+- Patient arrival confirmation
+- Cancellation support with reason tracking
+- Auto-cleanup of expired reservations
+
 ✅ **Real-Time Dashboard**
 - Emergency management interface
 - Driver fleet tracking
@@ -84,8 +92,8 @@ Open your browser: **http://localhost:3000**
 ## 📚 Documentation
 
 - **[START_HERE.md](./START_HERE.md)** - Quick start guide
-- **[SYSTEM_STATUS.md](./SYSTEM_STATUS.md)** - Complete system status & features
 - **[HOSPITAL_INTEGRATION_GUIDE.md](./HOSPITAL_INTEGRATION_GUIDE.md)** - Hospital matching details
+- **[BED_RESERVATION_GUIDE.md](./BED_RESERVATION_GUIDE.md)** - Bed reservation system guide
 
 ---
 
@@ -388,8 +396,10 @@ For issues or questions:
 ## 🎯 Roadmap
 
 - [ ] Real hospital API integration
-- [ ] Bed reservation system
+- [x] Bed reservation system ✅
+- [ ] Real-time ambulance tracking
 - [ ] Hospital portal for updates
+- [ ] Patient medical history
 - [ ] Patient handoff tracking
 - [ ] Mobile apps (React Native)
 - [ ] Advanced analytics dashboard

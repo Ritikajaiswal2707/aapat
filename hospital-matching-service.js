@@ -8,6 +8,10 @@ app.use(express.json());
 // Mock hospital data with specialties and real-time availability
 const hospitals = new Map();
 
+// Bed reservations tracking
+const bedReservations = new Map(); // Map<reservationId, reservation>
+const hospitalReservations = new Map(); // Map<hospitalId, Set<reservationId>>
+
 const mockHospitals = [
   {
     id: 'hospital-001',
@@ -396,13 +400,327 @@ app.put('/api/hospitals/:id/beds', (req, res) => {
   }
 });
 
+// Reserve a bed at a hospital
+app.post('/api/hospitals/:hospitalId/reserve-bed', (req, res) => {
+  try {
+    const { hospitalId } = req.params;
+    const {
+      ride_request_id,
+      bed_type,
+      patient_name,
+      emergency_type,
+      priority,
+      eta_minutes,
+      requester_phone
+    } = req.body;
+
+    const hospital = hospitals.get(hospitalId);
+    
+    if (!hospital) {
+      return res.status(404).json({
+        success: false,
+        message: 'Hospital not found'
+      });
+    }
+
+    // Check bed availability
+    if (!hospital.beds[bed_type] || hospital.beds[bed_type].available <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: `No ${bed_type} beds available`,
+        available_beds: hospital.beds[bed_type]?.available || 0
+      });
+    }
+
+    // Create reservation
+    const reservationId = `RES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const reservation = {
+      id: reservationId,
+      hospital_id: hospitalId,
+      hospital_name: hospital.name,
+      ride_request_id,
+      bed_type,
+      patient_name,
+      emergency_type,
+      priority,
+      eta_minutes,
+      requester_phone,
+      status: 'active',
+      reserved_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + (eta_minutes + 15) * 60 * 1000).toISOString(), // ETA + 15 min buffer
+      confirmed_by_hospital: false
+    };
+
+    // Decrease available beds
+    hospital.beds[bed_type].available--;
+    hospitals.set(hospitalId, hospital);
+
+    // Store reservation
+    bedReservations.set(reservationId, reservation);
+    
+    // Track hospital reservations
+    if (!hospitalReservations.has(hospitalId)) {
+      hospitalReservations.set(hospitalId, new Set());
+    }
+    hospitalReservations.get(hospitalId).add(reservationId);
+
+    console.log(`🛏️ Bed reserved: ${bed_type} at ${hospital.name} for ${patient_name} (ETA: ${eta_minutes} min)`);
+
+    res.json({
+      success: true,
+      message: 'Bed reserved successfully',
+      reservation: {
+        id: reservationId,
+        hospital_name: hospital.name,
+        hospital_address: hospital.address,
+        hospital_contact: hospital.contact,
+        bed_type,
+        reserved_at: reservation.reserved_at,
+        expires_at: reservation.expires_at,
+        eta_minutes
+      }
+    });
+
+  } catch (error) {
+    console.error('Bed reservation error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to reserve bed',
+      error: error.message
+    });
+  }
+});
+
+// Cancel bed reservation
+app.post('/api/reservations/:reservationId/cancel', (req, res) => {
+  try {
+    const { reservationId } = req.params;
+    const { reason } = req.body;
+
+    const reservation = bedReservations.get(reservationId);
+    
+    if (!reservation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reservation not found'
+      });
+    }
+
+    if (reservation.status === 'cancelled' || reservation.status === 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: `Reservation already ${reservation.status}`
+      });
+    }
+
+    // Release the bed
+    const hospital = hospitals.get(reservation.hospital_id);
+    if (hospital) {
+      hospital.beds[reservation.bed_type].available++;
+      hospitals.set(reservation.hospital_id, hospital);
+    }
+
+    // Update reservation
+    reservation.status = 'cancelled';
+    reservation.cancelled_at = new Date().toISOString();
+    reservation.cancellation_reason = reason || 'Not specified';
+    bedReservations.set(reservationId, reservation);
+
+    console.log(`❌ Bed reservation cancelled: ${reservationId} - ${reason}`);
+
+    res.json({
+      success: true,
+      message: 'Reservation cancelled successfully',
+      reservation
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to cancel reservation',
+      error: error.message
+    });
+  }
+});
+
+// Confirm patient arrival (hospital confirms)
+app.post('/api/reservations/:reservationId/confirm-arrival', (req, res) => {
+  try {
+    const { reservationId } = req.params;
+    const { confirmed_by, notes } = req.body;
+
+    const reservation = bedReservations.get(reservationId);
+    
+    if (!reservation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reservation not found'
+      });
+    }
+
+    if (reservation.status !== 'active') {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot confirm reservation with status: ${reservation.status}`
+      });
+    }
+
+    // Update reservation
+    reservation.status = 'completed';
+    reservation.confirmed_by_hospital = true;
+    reservation.confirmed_by = confirmed_by;
+    reservation.confirmed_at = new Date().toISOString();
+    reservation.arrival_notes = notes;
+    bedReservations.set(reservationId, reservation);
+
+    console.log(`✅ Patient arrived: ${reservation.patient_name} at ${reservation.hospital_name}`);
+
+    res.json({
+      success: true,
+      message: 'Patient arrival confirmed',
+      reservation
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to confirm arrival',
+      error: error.message
+    });
+  }
+});
+
+// Get reservation details
+app.get('/api/reservations/:reservationId', (req, res) => {
+  try {
+    const { reservationId } = req.params;
+    const reservation = bedReservations.get(reservationId);
+    
+    if (!reservation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reservation not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: reservation
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch reservation',
+      error: error.message
+    });
+  }
+});
+
+// Get all reservations for a hospital
+app.get('/api/hospitals/:hospitalId/reservations', (req, res) => {
+  try {
+    const { hospitalId } = req.params;
+    const { status } = req.query; // Filter by status: active, completed, cancelled
+
+    const reservationIds = hospitalReservations.get(hospitalId) || new Set();
+    let reservations = Array.from(reservationIds)
+      .map(id => bedReservations.get(id))
+      .filter(r => r); // Remove any undefined
+
+    // Filter by status if provided
+    if (status) {
+      reservations = reservations.filter(r => r.status === status);
+    }
+
+    // Sort by reserved_at, newest first
+    reservations.sort((a, b) => new Date(b.reserved_at) - new Date(a.reserved_at));
+
+    res.json({
+      success: true,
+      data: reservations,
+      total: reservations.length
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch reservations',
+      error: error.message
+    });
+  }
+});
+
+// Get all active reservations
+app.get('/api/reservations', (req, res) => {
+  try {
+    const { status } = req.query;
+    
+    let reservations = Array.from(bedReservations.values());
+
+    // Filter by status if provided
+    if (status) {
+      reservations = reservations.filter(r => r.status === status);
+    }
+
+    // Sort by reserved_at, newest first
+    reservations.sort((a, b) => new Date(b.reserved_at) - new Date(a.reserved_at));
+
+    res.json({
+      success: true,
+      data: reservations,
+      total: reservations.length,
+      active: reservations.filter(r => r.status === 'active').length,
+      completed: reservations.filter(r => r.status === 'completed').length,
+      cancelled: reservations.filter(r => r.status === 'cancelled').length
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch reservations',
+      error: error.message
+    });
+  }
+});
+
+// Auto-cleanup expired reservations (runs every minute)
+setInterval(() => {
+  const now = new Date();
+  let expiredCount = 0;
+
+  bedReservations.forEach((reservation, reservationId) => {
+    if (reservation.status === 'active' && new Date(reservation.expires_at) < now) {
+      // Release the bed
+      const hospital = hospitals.get(reservation.hospital_id);
+      if (hospital) {
+        hospital.beds[reservation.bed_type].available++;
+        hospitals.set(reservation.hospital_id, hospital);
+      }
+
+      // Mark as expired
+      reservation.status = 'expired';
+      reservation.expired_at = now.toISOString();
+      bedReservations.set(reservationId, reservation);
+      
+      expiredCount++;
+      console.log(`⏰ Reservation expired: ${reservationId} - ${reservation.hospital_name}`);
+    }
+  });
+
+  if (expiredCount > 0) {
+    console.log(`🧹 Cleaned up ${expiredCount} expired reservations`);
+  }
+}, 60000); // Check every minute
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'OK',
     service: 'Hospital Matching Service',
     timestamp: new Date().toISOString(),
-    total_hospitals: hospitals.size
+    total_hospitals: hospitals.size,
+    active_reservations: Array.from(bedReservations.values()).filter(r => r.status === 'active').length
   });
 });
 
