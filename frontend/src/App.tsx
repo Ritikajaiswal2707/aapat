@@ -127,7 +127,7 @@ function App() {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/analytics/dashboard?period=24h');
+      const response = await fetch('http://localhost:3008/api/analytics/dashboard?period=24h');
       const data = await response.json();
       if (data.success) {
         setMetrics({
@@ -151,7 +151,7 @@ function App() {
 
   const fetchAmbulances = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/ambulances');
+      const response = await fetch('http://localhost:3002/api/ambulances');
       const data = await response.json();
       if (data.success) {
         setAmbulances(data.data);
@@ -163,7 +163,7 @@ function App() {
 
   const fetchHospitals = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/hospitals');
+      const response = await fetch('http://localhost:3004/api/hospitals');
       const data = await response.json();
       if (data.success) {
         setHospitals(data.data);
@@ -175,7 +175,7 @@ function App() {
 
   const fetchRecentEmergencies = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/emergency/recent');
+      const response = await fetch('http://localhost:3001/api/emergency/recent');
       const data = await response.json();
       if (data.success) {
         setEmergencies(data.data || []);
@@ -213,7 +213,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/emergency/request', {
+      const response = await fetch('http://localhost:3001/api/emergency/request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -257,7 +257,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/emergency/request', {
+      const response = await fetch('http://localhost:3001/api/emergency/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

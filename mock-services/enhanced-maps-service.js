@@ -1,14 +1,18 @@
 // Enhanced Maps Service with Data Storage and Realistic Behavior
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 class EnhancedMapsService {
   constructor() {
-    this.isConfigured = false; // Always use mock mode for testing
+    // Enable real Google Maps API
+    this.googleMapsApiKey = 'AIzaSyBXbyqebArDDbV4TWfTqMHJ4KQavEH-RAY';
+    this.isConfigured = true; // Enable real Google Maps API
+    this.baseUrl = 'https://maps.googleapis.com/maps/api';
     this.locationHistory = [];
     this.hospitals = [];
     this.loadMockData();
-    console.log('🗺️ Enhanced Maps Service: Running in MOCK MODE with data storage');
+    console.log('🗺️ Enhanced Maps Service: Running with REAL Google Maps API');
   }
 
   loadMockData() {
@@ -71,77 +75,191 @@ class EnhancedMapsService {
   }
 
   async getDirections(origin, destination, mode = 'driving') {
-    console.log('🗺️ Enhanced Maps Mock: Directions calculated');
-    
-    const distance = this.calculateDistance(origin, destination);
-    const baseDuration = distance * 2; // Base 2 minutes per km
-    const trafficMultiplier = this.getTrafficMultiplier();
-    const duration = Math.round(baseDuration * trafficMultiplier);
-    
-    const route = this.generateRoute(origin, destination);
-    
-    const result = {
-      success: true,
-      message: 'Directions calculated successfully (Enhanced Mock Mode)',
-      data: {
-        distance: `${distance.toFixed(1)} km`,
-        duration: `${duration} minutes`,
-        route: route,
-        traffic_condition: trafficMultiplier > 1.3 ? 'Heavy Traffic' : trafficMultiplier < 0.8 ? 'Light Traffic' : 'Normal Traffic',
-        mode: mode,
-        waypoints: route.length - 2
+    console.log('🗺️ Enhanced Maps Real: Directions calculated');
+
+    if (!this.isConfigured) {
+      // Fallback to mock mode
+      const distance = this.calculateDistance(origin, destination);
+      const baseDuration = distance * 2;
+      const trafficMultiplier = this.getTrafficMultiplier();
+      const duration = Math.round(baseDuration * trafficMultiplier);
+      
+      return {
+        success: true,
+        message: 'Directions calculated (fallback mock mode)',
+        data: {
+          distance: `${distance.toFixed(1)} km`,
+          duration: `${duration} minutes`,
+          route: this.generateRoute(origin, destination),
+          mode: mode
+        }
+      };
+    }
+
+    try {
+      // Use real Google Maps API
+      const response = await axios.get(`${this.baseUrl}/directions/json`, {
+        params: {
+          origin: `${origin.lat},${origin.lng}`,
+          destination: `${destination.lat},${destination.lng}`,
+          mode: mode,
+          language: 'en',
+          key: this.googleMapsApiKey
+        }
+      });
+
+      if (response.data.status !== 'OK') {
+        throw new Error(response.data.error_message || 'Directions API error');
       }
-    };
 
-    // Store in history
-    this.locationHistory.push({
-      id: 'route_' + Date.now(),
-      type: 'DIRECTIONS',
-      origin: origin,
-      destination: destination,
-      distance: distance,
-      duration: duration,
-      created_at: new Date()
-    });
+      const route = response.data.routes[0];
+      const leg = route.legs[0];
+      const waypoints = [];
+      
+      // Extract waypoints from steps
+      leg.steps.forEach(step => {
+        waypoints.push({
+          lat: step.end_location.lat,
+          lng: step.end_location.lng,
+          instruction: step.html_instructions.replace(/<[^>]*>/g, '') // Remove HTML tags
+        });
+      });
 
-    return result;
+      const result = {
+        success: true,
+        message: 'Directions calculated successfully (Real Google Maps API)',
+        data: {
+          distance: leg.distance.text,
+          duration: leg.duration.text,
+          distance_value: leg.distance.value, // in meters
+          duration_value: leg.duration.value, // in seconds
+          route: waypoints,
+          mode: mode,
+          waypoints: waypoints.length
+        }
+      };
+
+      // Store in history
+      this.locationHistory.push({
+        id: 'route_' + Date.now(),
+        type: 'DIRECTIONS',
+        origin: origin,
+        destination: destination,
+        distance: leg.distance.value / 1000, // Convert to km
+        duration: leg.duration.value / 60, // Convert to minutes
+        created_at: new Date()
+      });
+
+      return result;
+
+    } catch (error) {
+      console.error('Google Maps API Error:', error.message);
+      
+      // Fallback to mock mode on API error
+      const distance = this.calculateDistance(origin, destination);
+      const baseDuration = distance * 2;
+      const trafficMultiplier = this.getTrafficMultiplier();
+      const duration = Math.round(baseDuration * trafficMultiplier);
+      
+      return {
+        success: true,
+        message: 'Directions calculated (fallback after API error)',
+        data: {
+          distance: `${distance.toFixed(1)} km`,
+          duration: `${duration} minutes`,
+          route: this.generateRoute(origin, destination),
+          mode: mode,
+          error_fallback: true
+        }
+      };
+    }
   }
 
   async geocodeAddress(address) {
-    console.log('🗺️ Enhanced Maps Mock: Address geocoded');
-    
-    // Generate realistic coordinates for Delhi area
-    const delhiCenter = { lat: 28.6139, lng: 77.2090 };
-    const lat = delhiCenter.lat + (Math.random() - 0.5) * 0.2; // ±0.1 degree
-    const lng = delhiCenter.lng + (Math.random() - 0.5) * 0.2; // ±0.1 degree
-    
-    const result = {
-      success: true,
-      message: 'Address geocoded successfully (Enhanced Mock Mode)',
-      data: {
-        lat: lat,
-        lng: lng,
-        formatted_address: address,
-        place_id: 'mock_place_' + Date.now(),
-        address_components: {
-          locality: 'New Delhi',
-          city: 'Delhi',
-          state: 'Delhi',
-          country: 'India'
+    console.log('🗺️ Enhanced Maps Real: Address geocoded');
+
+    if (!this.isConfigured) {
+      // Fallback to mock mode
+      const delhiCenter = { lat: 28.6139, lng: 77.2090 };
+      const lat = delhiCenter.lat + (Math.random() - 0.5) * 0.2;
+      const lng = delhiCenter.lng + (Math.random() - 0.5) * 0.2;
+      
+      return {
+        success: true,
+        message: 'Address geocoded (fallback mock mode)',
+        data: {
+          lat: lat,
+          lng: lng,
+          formatted_address: address,
+          place_id: 'mock_place_' + Date.now()
         }
+      };
+    }
+
+    try {
+      // Use real Google Maps Geocoding API
+      const response = await axios.get(`${this.baseUrl}/geocode/json`, {
+        params: {
+          address: address,
+          key: this.googleMapsApiKey
+        }
+      });
+
+      if (response.data.status !== 'OK') {
+        throw new Error(response.data.error_message || 'Geocoding API error');
       }
-    };
 
-    // Store in history
-    this.locationHistory.push({
-      id: 'geocode_' + Date.now(),
-      type: 'GEOCODE',
-      address: address,
-      coordinates: { lat, lng },
-      created_at: new Date()
-    });
+      const result = response.data.results[0];
+      const location = result.geometry.location;
 
-    return result;
+      const geocodeResult = {
+        success: true,
+        message: 'Address geocoded successfully (Real Google Maps API)',
+        data: {
+          lat: location.lat,
+          lng: location.lng,
+          formatted_address: result.formatted_address,
+          place_id: result.place_id,
+          address_components: result.address_components.map(comp => ({
+            type: comp.types,
+            name: comp.long_name,
+            short_name: comp.short_name
+          }))
+        }
+      };
+
+      // Store in history
+      this.locationHistory.push({
+        id: 'geocode_' + Date.now(),
+        type: 'GEOCODE',
+        address: address,
+        coordinates: { lat: location.lat, lng: location.lng },
+        formatted_address: result.formatted_address,
+        created_at: new Date()
+      });
+
+      return geocodeResult;
+
+    } catch (error) {
+      console.error('Google Maps Geocoding Error:', error.message);
+      
+      // Fallback to mock mode on API error
+      const delhiCenter = { lat: 28.6139, lng: 77.2090 };
+      const lat = delhiCenter.lat + (Math.random() - 0.5) * 0.2;
+      const lng = delhiCenter.lng + (Math.random() - 0.5) * 0.2;
+      
+      return {
+        success: true,
+        message: 'Address geocoded (fallback after API error)',
+        data: {
+          lat: lat,
+          lng: lng,
+          formatted_address: address,
+          place_id: 'mock_place_' + Date.now(),
+          error_fallback: true
+        }
+      };
+    }
   }
 
   async reverseGeocode(lat, lng) {
