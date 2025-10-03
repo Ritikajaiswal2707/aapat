@@ -7,6 +7,9 @@ const rateLimit = require('express-rate-limit');
 const axios = require('axios');
 const uuidv4 = require('uuid').v4;
 
+// Hospital matching service configuration
+const HOSPITAL_SERVICE_URL = 'http://localhost:3013';
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -253,6 +256,24 @@ app.post('/api/ride/request', async (req, res) => {
 
     console.log(`🚗 New ride request from ${customer.name} at ${pickup_location.lat}, ${pickup_location.lng}`);
 
+    // Get hospital recommendations
+    let recommendedHospitals = [];
+    try {
+      const hospitalResponse = await axios.post(`${HOSPITAL_SERVICE_URL}/api/hospitals/recommend`, {
+        location: pickup_location,
+        emergency_type: medical_info.emergency_type || medical_info.condition || 'general',
+        priority: medical_info.priority || 'normal',
+        bed_type: medical_info.priority === 'critical' ? 'icu' : 'emergency'
+      });
+      
+      if (hospitalResponse.data.success) {
+        recommendedHospitals = hospitalResponse.data.data.recommendations || [];
+        console.log(`🏥 Found ${recommendedHospitals.length} hospital recommendations`);
+      }
+    } catch (error) {
+      console.log('⚠️ Hospital service unavailable, continuing without recommendations');
+    }
+
     // Create ride request
     const rideRequestId = uuidv4();
     const rideRequest = {
@@ -265,6 +286,7 @@ app.post('/api/ride/request', async (req, res) => {
       payment_method: payment_method || 'upi',
       status: 'searching_drivers',
       fare_estimate: calculateFareEstimate(ride_type, destination_location),
+      recommended_hospitals: recommendedHospitals.slice(0, 3), // Top 3 recommendations
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString() // 5 min expiry
     };
@@ -320,7 +342,8 @@ app.post('/api/ride/request', async (req, res) => {
       ride_request_id: rideRequestId,
       status: 'searching_drivers',
       nearby_drivers_count: nearbyDrivers.length,
-      estimated_fare: rideRequest.fare_estimate
+      estimated_fare: rideRequest.fare_estimate,
+      recommended_hospitals: rideRequest.recommended_hospitals || []
     });
 
   } catch (error) {
@@ -694,6 +717,77 @@ function calculateFareEstimate(rideType, destination) {
     total_fare: Math.round(baseFare * multiplier)
   };
 }
+
+// Get all rides
+app.get('/api/rides', (req, res) => {
+  try {
+    const allRides = Array.from(rideRequests.values()).map(ride => ({
+      id: ride.id,
+      customer_name: ride.customer.name,
+      customer_phone: ride.customer.phone,
+      pickup_location: ride.pickup_location,
+      status: ride.status,
+      created_at: ride.created_at,
+      estimated_fare: ride.fare_estimate,
+      assigned_driver: ride.assigned_driver ? {
+        name: ride.assigned_driver.name,
+        phone: ride.assigned_driver.phone,
+        vehicle_number: ride.assigned_driver.vehicle_number
+      } : null,
+      otp: ride.otp,
+      medical_info: ride.medical_info,
+      recommended_hospitals: ride.recommended_hospitals || []
+    }));
+
+    // Sort by created_at, newest first
+    allRides.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    res.json({
+      success: true,
+      data: allRides,
+      total: allRides.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch rides',
+      error: error.message
+    });
+  }
+});
+
+// Get all drivers
+app.get('/api/drivers', (req, res) => {
+  try {
+    const allDrivers = Array.from(drivers.values()).map(driver => ({
+      id: driver.id,
+      name: driver.name,
+      phone: driver.phone,
+      vehicle_number: driver.vehicle_number,
+      vehicle_type: driver.vehicle_type,
+      equipment: driver.equipment,
+      is_available: driver.is_available,
+      is_online: driver.is_online,
+      rating: driver.rating,
+      location: driver.location,
+      current_ride: driver.current_ride
+    }));
+
+    res.json({
+      success: true,
+      data: allDrivers,
+      total: allDrivers.length,
+      available: allDrivers.filter(d => d.is_available).length,
+      online: allDrivers.filter(d => d.is_online).length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch drivers',
+      error: error.message
+    });
+  }
+});
 
 // Health check
 app.get('/health', (req, res) => {

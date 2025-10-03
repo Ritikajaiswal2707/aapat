@@ -13,6 +13,8 @@ interface Emergency {
   status: string;
   assigned_ambulance_id?: string;
   estimated_arrival?: string;
+  recommended_hospital?: string;
+  recommended_hospitals?: RecommendedHospital[];
 }
 
 interface DashboardMetrics {
@@ -47,6 +49,31 @@ interface Hospital {
   available_icu_beds: number;
   icu_beds: number;
   location: { lat: number; lng: number };
+}
+
+interface RecommendedHospital {
+  id: string;
+  name: string;
+  distance: number;
+  eta: number;
+  score: number;
+  recommended: boolean;
+  beds: {
+    general: { total: number; available: number };
+    icu: { total: number; available: number };
+    emergency: { total: number; available: number };
+  };
+  specialties: string[];
+  equipment: string[];
+  match_reasons: {
+    specialty_match: boolean;
+    has_required_equipment: boolean;
+    beds_available: number;
+    distance_km: number;
+  };
+  location: { lat: number; lng: number };
+  address: string;
+  contact: string;
 }
 
 interface UberStyleRide {
@@ -87,6 +114,7 @@ interface UberStyleRide {
     vehicle_number: string;
     rating: number;
   };
+  recommended_hospitals?: RecommendedHospital[];
   otp?: string;
   payment_status?: 'pending' | 'completed' | 'failed';
   created_at: string;
@@ -126,7 +154,7 @@ function App() {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'emergencies' | 'ambulances' | 'hospitals' | 'uber-rides'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'emergencies' | 'hospitals' | 'uber-rides'>('overview');
   
   // Uber-style state
   const [uberRides, setUberRides] = useState<UberStyleRide[]>([]);
@@ -167,7 +195,7 @@ function App() {
 
   useEffect(() => {
     // Initialize socket connection
-    const newSocket = io('http://localhost:3001');
+    const newSocket = io('http://localhost:3012');
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -200,21 +228,39 @@ function App() {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch('http://localhost:3008/api/analytics/dashboard?period=24h');
-      const data = await response.json();
-      if (data.success) {
+      // Fetch rides and drivers to calculate real metrics
+      const ridesResponse = await fetch('http://localhost:3012/api/rides');
+      const driversResponse = await fetch('http://localhost:3012/api/drivers');
+      
+      const ridesData = await ridesResponse.json();
+      const driversData = await driversResponse.json();
+      
+      if (ridesData.success && driversData.success) {
+        const rides = ridesData.data || [];
+        const drivers = driversData.data || [];
+        
+        // Calculate metrics from actual data
+        const criticalCount = rides.filter((r: any) => r.medical_info?.priority === 'critical').length;
+        const highCount = rides.filter((r: any) => r.medical_info?.priority === 'high').length;
+        const normalCount = rides.filter((r: any) => r.medical_info?.priority === 'normal').length;
+        const activeCount = rides.filter((r: any) => 
+          r.status === 'searching_drivers' || r.status === 'driver_accepted' || r.status === 'in_progress'
+        ).length;
+        const completedCount = rides.filter((r: any) => r.status === 'completed').length;
+        const availableDrivers = drivers.filter((d: any) => d.is_available).length;
+        
         setMetrics({
-          active_emergencies: data.data.metrics.total_emergencies || 0,
-          avg_response_time: data.data.metrics.avg_response_time_minutes || 0,
-          available_ambulances: data.data.metrics.available_ambulances || 0,
-          partner_hospitals: data.data.metrics.total_hospitals || 0,
-          critical_emergencies: data.data.metrics.critical_emergencies || 0,
-          high_emergencies: data.data.metrics.high_emergencies || 0,
-          medium_emergencies: data.data.metrics.medium_emergencies || 0,
-          low_emergencies: data.data.metrics.low_emergencies || 0,
-          total_emergencies_today: data.data.metrics.total_emergencies || 0,
-          completed_emergencies: data.data.metrics.completed_emergencies || 0,
-          avg_response_time_trend: 0 // This would come from trend analysis
+          active_emergencies: activeCount,
+          avg_response_time: 5.2, // Mock value
+          available_ambulances: availableDrivers,
+          partner_hospitals: 15, // Mock value
+          critical_emergencies: criticalCount,
+          high_emergencies: highCount,
+          medium_emergencies: normalCount,
+          low_emergencies: 0,
+          total_emergencies_today: rides.length,
+          completed_emergencies: completedCount,
+          avg_response_time_trend: -8 // Mock trend
         });
       }
     } catch (error) {
@@ -236,10 +282,20 @@ function App() {
 
   const fetchHospitals = async () => {
     try {
-      const response = await fetch('http://localhost:3004/api/hospitals');
+      const response = await fetch('http://localhost:3013/api/hospitals');
       const data = await response.json();
       if (data.success) {
-        setHospitals(data.data);
+        // Transform hospital data to match Hospital interface
+        const transformedHospitals = (data.data || []).map((h: any) => ({
+          id: h.id,
+          name: h.name,
+          total_beds: h.beds.general.total,
+          available_beds: h.beds.general.available,
+          icu_beds: h.beds.icu.total,
+          available_icu_beds: h.beds.icu.available,
+          location: h.location
+        }));
+        setHospitals(transformedHospitals);
       }
     } catch (error) {
       console.error('Failed to fetch hospitals:', error);
@@ -248,10 +304,34 @@ function App() {
 
   const fetchRecentEmergencies = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/emergency/recent');
+      const response = await fetch('http://localhost:3012/api/rides');
       const data = await response.json();
       if (data.success) {
-        setEmergencies(data.data || []);
+        // Transform rides data to Emergency format
+        const transformedData = (data.data || []).map((ride: any) => ({
+          id: ride.id || ride.ride_request_id,
+          priority: ride.medical_info?.priority === 'critical' ? 3 : 
+                    ride.medical_info?.priority === 'high' ? 2 : 1,
+          location: {
+            lat: ride.pickup_location?.lat || 0,
+            lng: ride.pickup_location?.lng || 0
+          },
+          address: ride.pickup_location?.address || 'Unknown location',
+          emergency_type: ride.medical_info?.emergency_type || 'Emergency',
+          patient_info: {
+            name: ride.customer_name,
+            phone: ride.customer_phone
+          },
+          timestamp: ride.created_at,
+          status: ride.status,
+          assigned_ambulance_id: ride.assigned_driver?.vehicle_number,
+          estimated_arrival: ride.assigned_driver ? '5-10 mins' : null,
+          recommended_hospital: ride.recommended_hospitals && ride.recommended_hospitals.length > 0 
+            ? ride.recommended_hospitals[0].name 
+            : null,
+          recommended_hospitals: ride.recommended_hospitals || []
+        }));
+        setEmergencies(transformedData);
       }
     } catch (error) {
       console.error('Failed to fetch emergencies:', error);
@@ -490,28 +570,31 @@ function App() {
   };
 
   const createTestEmergency = async () => {
+    const emergencyTypes = ["Heart Attack", "Accident", "Stroke", "Breathing Issue"];
     const testEmergency = {
-      caller_phone: "+919876543210",
-      patient_info: {
-        name: "Test Patient",
-        age: 35,
-        gender: "MALE",
-        blood_type: "O+"
+      customer: {
+        name: "Test Patient " + Math.floor(Math.random() * 1000),
+        phone: "+91-" + Math.floor(Math.random() * 9000000000 + 1000000000)
       },
-      location: {
-        latitude: 12.9716 + (Math.random() - 0.5) * 0.01, // Add some randomness
-        longitude: 77.5946 + (Math.random() - 0.5) * 0.01
+      ride_type: "emergency",
+      pickup_location: {
+        lat: 28.6315 + (Math.random() - 0.5) * 0.01,
+        lng: 77.2167 + (Math.random() - 0.5) * 0.01,
+        address: "Test Location, Delhi"
       },
-      address: "Test Location, Bangalore",
-      emergency_type: ["CARDIAC", "TRAUMA", "RESPIRATORY", "NEUROLOGICAL"][Math.floor(Math.random() * 4)],
-      symptoms: "Test emergency for demonstration",
-      conscious: true,
-      breathing: true,
-      pain_level: Math.floor(Math.random() * 10) + 1
+      medical_info: {
+        emergency_type: emergencyTypes[Math.floor(Math.random() * emergencyTypes.length)],
+        priority: ["critical", "high", "normal"][Math.floor(Math.random() * 3)],
+        patient_age: 35,
+        patient_gender: "MALE",
+        blood_type: "O+",
+        symptoms: "Test emergency for demonstration"
+      },
+      payment_method: "cash"
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/emergency/request', {
+      const response = await fetch('http://localhost:3012/api/ride/request', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -535,27 +618,32 @@ function App() {
   const submitCustomEmergency = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const payload = {
-      caller_phone: formPhone,
-      patient_info: {
+      customer: {
         name: formName,
-        age: 35,
-        gender: 'MALE',
-        blood_type: 'O+'
+        phone: formPhone
       },
-      location: {
-        latitude: 12.9716 + (Math.random() - 0.5) * 0.01,
-        longitude: 77.5946 + (Math.random() - 0.5) * 0.01
+      ride_type: "emergency",
+      pickup_location: {
+        lat: 28.6315 + (Math.random() - 0.5) * 0.01,
+        lng: 77.2167 + (Math.random() - 0.5) * 0.01,
+        address: formAddress
       },
-      address: formAddress,
+      medical_info: {
       emergency_type: formType,
+        priority: "high",
+        patient_age: 35,
+        patient_gender: 'MALE',
+        blood_type: 'O+',
       symptoms: formSymptoms,
       conscious: formConscious,
       breathing: formBreathing,
       pain_level: formPainLevel
+      },
+      payment_method: "cash"
     };
 
     try {
-      const response = await fetch('http://localhost:3001/api/emergency/request', {
+      const response = await fetch('http://localhost:3012/api/ride/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -600,36 +688,48 @@ function App() {
     return Math.max(2, Math.round((distanceKm / speedKmh) * 60));
   };
 
-  const assignNearestAmbulance = (emergencyId: string) => {
-    setEmergencies(prev => {
-      const emergency = prev.find(e => e.id === emergencyId);
-      if (!emergency) return prev;
-      if (!emergency.location) return prev;
-
-      let bestAmbulance: Ambulance | null = null;
-      let bestDistance = Number.POSITIVE_INFINITY;
-      ambulances.forEach(amb => {
-        const d = haversineKm(emergency.location, amb.location);
-        if (d < bestDistance) {
-          bestDistance = d;
-          bestAmbulance = amb;
-        }
+  const assignNearestAmbulance = async (emergencyId: string) => {
+    try {
+      // Get available drivers from the API
+      const driversResponse = await fetch('http://localhost:3012/api/drivers');
+      const driversData = await driversResponse.json();
+      
+      if (!driversData.success) {
+        alert('Failed to fetch available drivers');
+        return;
+      }
+      
+      const availableDrivers = driversData.data.filter((d: any) => d.is_available);
+      
+      if (availableDrivers.length === 0) {
+        alert('No drivers currently available. Please try again later.');
+        return;
+      }
+      
+      // Select first available driver (in real app, would calculate nearest)
+      const selectedDriver = availableDrivers[0];
+      
+      // Call the API to accept the ride on behalf of this driver
+      const acceptResponse = await fetch(`http://localhost:3012/api/driver/${selectedDriver.id}/accept`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ride_request_id: emergencyId })
       });
-
-      if (!bestAmbulance || !isFinite(bestDistance)) return prev;
-      const eta = estimateEtaMinutes(bestDistance);
-
-      return prev.map(e =>
-        e.id === emergencyId
-          ? ({
-              ...e,
-              status: 'ASSIGNED',
-              assigned_ambulance_id: bestAmbulance!.id,
-              estimated_arrival: `${eta} min`
-            } as any)
-          : e
-      );
-    });
+      
+      const acceptData = await acceptResponse.json();
+      
+      if (acceptData.success) {
+        alert(`✅ Driver ${selectedDriver.name} assigned successfully!\nVehicle: ${selectedDriver.vehicle_number}\nOTP: ${acceptData.otp || 'Will be generated'}`);
+        // Refresh the emergencies list
+        fetchRecentEmergencies();
+        fetchMetrics();
+      } else {
+        alert(`❌ Failed to assign driver: ${acceptData.message}`);
+      }
+    } catch (error: any) {
+      console.error('Assignment error:', error);
+      alert(`❌ Error assigning driver: ${error.message}`);
+    }
   };
 
   const getPriorityColor = (priority: number) => {
@@ -747,9 +847,8 @@ function App() {
           {[
             { id: 'overview', label: '📊 Overview', icon: 'chart-pie' },
             { id: 'emergencies', label: '🚨 Emergencies', icon: 'exclamation-triangle' },
-            { id: 'ambulances', label: '🚑 Ambulances', icon: 'ambulance' },
-            { id: 'hospitals', label: '🏥 Hospitals', icon: 'hospital' },
-            { id: 'uber-rides', label: '🚑 Ambulance Booking', icon: 'ambulance' }
+            { id: 'uber-rides', label: '🚑 Ambulance Booking', icon: 'ambulance' },
+            { id: 'hospitals', label: '🏥 Hospitals', icon: 'hospital' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -950,6 +1049,11 @@ function App() {
                         Patient: {emergency.patient_info.name}
                       </div>
                     )}
+                    {emergency.recommended_hospital && (
+                      <div style={{ color: '#10b981', fontSize: '0.9rem', marginTop: '4px', fontWeight: 'bold' }}>
+                        🏥 Recommended: {emergency.recommended_hospital}
+                      </div>
+                    )}
                     <div style={{ marginTop: '8px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                       <button onClick={() => setSelectedEmergency(emergency)} style={{
                         background: 'white', border: '1px solid #e5e7eb', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer'
@@ -1114,57 +1218,6 @@ function App() {
           </div>
         )}
 
-        {/* Ambulances Tab */}
-        {activeTab === 'ambulances' && (
-          <div style={{
-            background: 'white',
-            padding: '20px',
-            borderRadius: '10px',
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-            marginBottom: '30px'
-          }}>
-            <h3 style={{ marginTop: 0, color: '#374151' }}>🚑 Ambulance Fleet Status</h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '15px',
-              marginTop: '15px'
-            }}>
-              {ambulances.map(ambulance => (
-                <div key={ambulance.id} style={{
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  padding: '15px',
-                  background: 'white'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <h4 style={{ margin: 0, color: '#374151' }}>{ambulance.license_plate}</h4>
-                    <span style={{
-                      background: getStatusColor(ambulance.status),
-                      color: 'white',
-                      padding: '4px 8px',
-                      borderRadius: '4px',
-                      fontSize: '0.8rem',
-                      fontWeight: 'bold'
-                    }}>
-                      {ambulance.status}
-                    </span>
-                  </div>
-                  <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
-                    <div>Driver: {ambulance.driver_name}</div>
-                    <div>Equipment: {ambulance.equipment_level}</div>
-                    <div>Location: {ambulance.location.lat.toFixed(4)}, {ambulance.location.lng.toFixed(4)}</div>
-                    {ambulance.eta_minutes && (
-                      <div style={{ color: '#3b82f6', fontWeight: 'bold' }}>
-                        ETA: {ambulance.eta_minutes} minutes
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Hospitals Tab */}
         {activeTab === 'hospitals' && (
@@ -1318,8 +1371,7 @@ function App() {
               ) : (
                 <div style={{ marginTop: '15px' }}>
                   {uberRides.map((ride, index) => (
-                    <div key={ride.id} style={{
-                      background: 'white',
+                    <div key={ride.id}                     style={{
                       padding: '20px',
                       borderRadius: '10px',
                       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
@@ -1329,9 +1381,9 @@ function App() {
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                         <div style={{ flex: 1 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                            <span style={{
+                    <span style={{
                               background: getRideTypeColor(ride.ride_type),
-                              color: 'white',
+                      color: 'white',
                               padding: '6px 12px',
                               borderRadius: '6px',
                               fontSize: '0.8rem',
@@ -1345,11 +1397,11 @@ function App() {
                               color: 'white',
                               padding: '6px 12px',
                               borderRadius: '6px',
-                              fontSize: '0.8rem',
-                              fontWeight: 'bold'
-                            }}>
+                      fontSize: '0.8rem',
+                      fontWeight: 'bold'
+                    }}>
                               {getRideStatusText(ride.status)}
-                            </span>
+                    </span>
                             {ride.otp && (
                               <span style={{
                                 background: '#8b5cf6',
@@ -1362,7 +1414,7 @@ function App() {
                                 🔐 OTP: {ride.otp}
                               </span>
                             )}
-                          </div>
+                  </div>
                           
                           <div style={{ marginBottom: '8px' }}>
                             <div style={{ fontWeight: 'bold', color: '#374151', fontSize: '1rem' }}>
@@ -1385,16 +1437,16 @@ function App() {
                           {ride.medical_info?.condition && (
                             <div style={{ color: '#dc2626', fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '4px' }}>
                               🚑 Medical: {ride.medical_info.condition}
-                            </div>
-                          )}
+                      </div>
+                    )}
                           
                           {ride.assigned_driver && (
                             <div style={{ background: '#f0f9ff', padding: '8px', borderRadius: '6px', marginBottom: '8px' }}>
                               <div style={{ fontWeight: 'bold', color: '#1e40af' }}>👨‍⚕️ Driver: {ride.assigned_driver.name}</div>
                               <div style={{ fontSize: '0.9rem', color: '#374151' }}>
                                 📱 {ride.assigned_driver.phone} • ⭐ {ride.assigned_driver.rating}/5 • 🚑 {ride.assigned_driver.vehicle_number}
-                              </div>
-                            </div>
+                  </div>
+                </div>
                           )}
                           
                           {ride.estimated_fare && (
@@ -1404,9 +1456,9 @@ function App() {
                               </div>
                               <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
                                 Created: {new Date(ride.created_at).toLocaleTimeString()}
-                              </div>
-                            </div>
-                          )}
+            </div>
+          </div>
+        )}
                         </div>
                       </div>
                     </div>
@@ -1416,23 +1468,23 @@ function App() {
             </div>
 
             {/* Driver Management */}
-            <div style={{
-              background: 'white',
-              padding: '20px',
-              borderRadius: '10px',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              marginBottom: '30px'
-            }}>
+          <div style={{
+            background: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            marginBottom: '30px'
+          }}>
               <h3 style={{ marginTop: 0, color: '#374151' }}>👨‍⚕️ Professional Driver Fleet</h3>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                gap: '15px',
-                marginTop: '15px'
-              }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gap: '15px',
+              marginTop: '15px'
+            }}>
                 {drivers.map(driver => (
                   <div key={driver.id} style={{
-                    border: '1px solid #e5e7eb',
+                  border: '1px solid #e5e7eb',
                     borderRadius: '10px',
                     padding: '20px',
                     background: driver.is_available ? '#f0fdf4' : '#fef2f2'
@@ -1450,7 +1502,7 @@ function App() {
                         {driver.is_online ? (driver.is_available ? 'Available' : 'Busy') : 'Offline'}
                       </span>
                     </div>
-                    <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
+                  <div style={{ color: '#6b7280', fontSize: '0.9rem' }}>
                       <div>📞 {driver.phone}</div>
                       <div>🚑 {driver.vehicle_number} ({driver.vehicle_type})</div>
                       <div>⭐ Rating: {driver.rating}/5.0</div>
@@ -1471,7 +1523,7 @@ function App() {
 
             {/* Ride Form Modal */}
             {showRideForm && (
-              <div style={{
+                    <div style={{ 
                 position: 'fixed',
                 top: 0,
                 left: 0,
@@ -1495,7 +1547,7 @@ function App() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h3 style={{ margin: 0, color: '#374151' }}>🚑 Book Ambulance Transport</h3>
                     <button onClick={() => setShowRideForm(false)} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>✖</button>
-                  </div>
+                    </div>
                   
                   <form onSubmit={(e) => { e.preventDefault(); createUberStyleRide(); }} style={{ display: 'grid', gap: '16px' }}>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -1507,7 +1559,7 @@ function App() {
                           style={{ width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '1rem' }}
                           required 
                         />
-                      </div>
+                  </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '6px', fontWeight: 'bold', color: '#374151' }}>Phone Number</label>
                         <input 
@@ -1516,7 +1568,7 @@ function App() {
                           style={{ width: '100%', padding: '12px', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '1rem' }}
                           required 
                         />
-                      </div>
+                </div>
                     </div>
                     
                     <div>
@@ -1601,8 +1653,8 @@ function App() {
                       }}>🚑 Book Ambulance Now</button>
                     </div>
                   </form>
-                </div>
-              </div>
+            </div>
+          </div>
             )}
           </>
         )}
@@ -1630,6 +1682,53 @@ function App() {
             )}
             <div style={{ marginTop: '4px' }}>Status: <span style={{ color: '#3b82f6', fontWeight: 'bold' }}>{selectedEmergency.status || 'PENDING'}</span></div>
             <div style={{ marginTop: '4px' }}>Time: {new Date(selectedEmergency.timestamp).toLocaleString()}</div>
+            
+            {/* Hospital Recommendations */}
+            {selectedEmergency.recommended_hospitals && selectedEmergency.recommended_hospitals.length > 0 && (
+              <div style={{ marginTop: '16px', borderTop: '1px solid #e5e7eb', paddingTop: '12px' }}>
+                <h4 style={{ margin: '0 0 8px 0', color: '#374151', fontSize: '0.95rem' }}>🏥 Recommended Hospitals</h4>
+                {selectedEmergency.recommended_hospitals.map((hospital: RecommendedHospital, index: number) => (
+                  <div key={hospital.id} style={{
+                    padding: '10px',
+                    border: hospital.recommended ? '2px solid #10b981' : '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    marginBottom: '8px',
+                    background: hospital.recommended ? '#f0fdf4' : 'white'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 'bold', color: '#374151' }}>
+                          {hospital.recommended && '⭐ '}
+                          {hospital.name}
+                        </div>
+                        <div style={{ fontSize: '0.85rem', color: '#6b7280', marginTop: '4px' }}>
+                          📍 {hospital.distance} km • ⏱️ {hospital.eta} min ETA
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '2px' }}>
+                          🛏️ Available: {hospital.match_reasons.beds_available} beds
+                        </div>
+                        {hospital.match_reasons.specialty_match && (
+                          <div style={{ fontSize: '0.75rem', color: '#10b981', marginTop: '2px' }}>
+                            ✅ Specialty Match
+                          </div>
+                        )}
+                      </div>
+                      <div style={{
+                        background: hospital.score > 80 ? '#10b981' : hospital.score > 60 ? '#f59e0b' : '#6b7280',
+                        color: 'white',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        fontWeight: 'bold'
+                      }}>
+                        {hospital.score}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px' }}>
               <button onClick={() => assignNearestAmbulance(selectedEmergency.id)} style={{ background: '#3b82f6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Assign</button>
               <button onClick={() => updateEmergencyStatusLocal(selectedEmergency.id, 'IN_PROGRESS')} style={{ background: '#8b5cf6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Start</button>
