@@ -439,6 +439,105 @@ app.post('/api/driver/:driverId/accept', async (req, res) => {
   }
 });
 
+// Manual assignment endpoint for dashboard
+app.post('/api/ride/:rideRequestId/assign-driver/:driverId', async (req, res) => {
+  try {
+    const { rideRequestId, driverId } = req.params;
+
+    if (!rideRequests.has(rideRequestId)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ride request not found'
+      });
+    }
+
+    if (!drivers.has(driverId)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Driver not found'
+      });
+    }
+
+    const rideRequest = rideRequests.get(rideRequestId);
+    const driver = drivers.get(driverId);
+
+    if (rideRequest.status !== 'searching_drivers' && rideRequest.status !== 'broadcasting' && rideRequest.status !== 'pending_assignment') {
+      return res.status(400).json({
+        success: false,
+        message: 'Ride request is not in assignable state'
+      });
+    }
+
+    if (!driver.is_available) {
+      return res.status(400).json({
+        success: false,
+        message: 'Driver is not available'
+      });
+    }
+
+    // Manually assign driver
+    driver.current_ride = rideRequestId;
+    driver.is_available = false;
+    
+    rideRequest.status = 'driver_accepted';
+    rideRequest.assigned_driver = driver;
+    rideRequest.accepted_at = new Date().toISOString();
+
+    drivers.set(driverId, driver);
+    rideRequests.set(rideRequestId, rideRequest);
+
+    // Emit socket event for status update
+    const emergencyData = {
+      id: rideRequestId,
+      priority: rideRequest.medical_info?.priority === 'critical' ? 3 : 
+                rideRequest.medical_info?.priority === 'high' ? 2 : 1,
+      location: {
+        lat: rideRequest.pickup_location?.lat || 0,
+        lng: rideRequest.pickup_location?.lng || 0
+      },
+      address: rideRequest.pickup_location?.address || 'Unknown location',
+      emergency_type: rideRequest.medical_info?.emergency_type || 'Emergency',
+      patient_info: {
+        name: rideRequest.customer.name,
+        phone: rideRequest.customer.phone
+      },
+      timestamp: rideRequest.created_at,
+      status: 'driver_accepted',
+      assigned_ambulance_id: rideRequest.assigned_driver?.vehicle_number,
+      estimated_arrival: '5-10 mins',
+      recommended_hospital: rideRequest.recommended_hospitals && rideRequest.recommended_hospitals.length > 0 
+        ? rideRequest.recommended_hospitals[0].name 
+        : null,
+      recommended_hospitals: rideRequest.recommended_hospitals || [],
+      isCompleted: false
+    };
+
+    io.emit('emergency_status_update', emergencyData);
+
+    console.log(`🎯 Ride ${rideRequestId} manually assigned to driver ${driverId}`);
+
+    res.json({
+      success: true,
+      message: 'Driver assigned successfully',
+      ride_request_id: rideRequestId,
+      driver: {
+        id: driver.id,
+        name: driver.name,
+        phone: driver.phone,
+        vehicle_number: driver.vehicle_number
+      }
+    });
+
+  } catch (error) {
+    console.error('Manual assignment error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to assign driver',
+      error: error.message
+    });
+  }
+});
+
 // STEP 3: Generate OTP for ride start (Uber-style)
 app.post('/api/ride/:rideRequestId/generate-otp', async (req, res) => {
   try {
@@ -482,6 +581,7 @@ app.post('/api/ride/:rideRequestId/generate-otp', async (req, res) => {
       success: true,
       message: 'OTP generated successfully',
       ride_request_id: rideRequestId,
+      otp: otp,
       otp_sent_to_customer: true,
       otp_expires_in_minutes: 5
     });
@@ -581,7 +681,7 @@ app.post('/api/ride/:rideRequestId/complete', async (req, res) => {
       });
     }
 
-    if (rideRequest.status !== 'ride_started') {
+    if (rideRequest.status !== 'ride_started' && rideRequest.status !== 'otp_verified' && rideRequest.status !== 'otp_generated') {
       return res.status(400).json({
         success: false,
         message: 'Cannot complete ride that has not started'
@@ -605,6 +705,35 @@ app.post('/api/ride/:rideRequestId/complete', async (req, res) => {
     rideRequests.set(rideRequestId, rideRequest);
 
     console.log(`🎉 Ride ${rideRequestId} completed! Fare: ₹${rideRequest.fare_paid}`);
+
+    // Emit socket event for emergency completion
+    const emergencyData = {
+      id: rideRequestId,
+      priority: rideRequest.medical_info?.priority === 'critical' ? 3 : 
+                rideRequest.medical_info?.priority === 'high' ? 2 : 1,
+      location: {
+        lat: rideRequest.pickup_location?.lat || 0,
+        lng: rideRequest.pickup_location?.lng || 0
+      },
+      address: rideRequest.pickup_location?.address || 'Unknown location',
+      emergency_type: rideRequest.medical_info?.emergency_type || 'Emergency',
+      patient_info: {
+        name: rideRequest.customer.name,
+        phone: rideRequest.customer.phone
+      },
+      timestamp: rideRequest.created_at,
+      status: 'completed',
+      assigned_ambulance_id: rideRequest.assigned_driver?.vehicle_number,
+      estimated_arrival: null,
+      recommended_hospital: rideRequest.recommended_hospitals && rideRequest.recommended_hospitals.length > 0 
+        ? rideRequest.recommended_hospitals[0].name 
+        : null,
+      recommended_hospitals: rideRequest.recommended_hospitals || [],
+      isCompleted: true
+    };
+
+    io.emit('emergency_completed', emergencyData);
+    io.emit('emergency_status_update', emergencyData);
 
     res.json({
       success: true,

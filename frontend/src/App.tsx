@@ -213,6 +213,23 @@ function App() {
       updateMetrics();
     });
 
+    newSocket.on('emergency_completed', (emergency: Emergency) => {
+      setEmergencies(prev => prev.map(e => e.id === emergency.id ? emergency : e));
+      updateMetrics();
+      // Show notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Emergency Completed', {
+          body: `${emergency.patient_info.name} - ${emergency.emergency_type}`,
+          icon: '/favicon.ico'
+        });
+      }
+    });
+
+    newSocket.on('emergency_status_update', (updatedEmergency: Emergency) => {
+      setEmergencies(prev => prev.map(e => e.id === updatedEmergency.id ? updatedEmergency : e));
+      updateMetrics();
+    });
+
     // Fetch initial data
     fetchMetrics();
     fetchRecentEmergencies();
@@ -221,8 +238,15 @@ function App() {
     fetchUberRides();
     fetchDrivers();
 
+    // Set up periodic refresh for metrics (every 10 seconds)
+    const refreshInterval = setInterval(() => {
+      fetchMetrics();
+      fetchRecentEmergencies();
+    }, 10000);
+
     return () => {
       newSocket.close();
+      clearInterval(refreshInterval);
     };
   }, []);
 
@@ -244,7 +268,13 @@ function App() {
         const highCount = rides.filter((r: any) => r.medical_info?.priority === 'high').length;
         const normalCount = rides.filter((r: any) => r.medical_info?.priority === 'normal').length;
         const activeCount = rides.filter((r: any) => 
-          r.status === 'searching_drivers' || r.status === 'driver_accepted' || r.status === 'in_progress'
+          r.status === 'searching_drivers' || 
+          r.status === 'broadcasting' || 
+          r.status === 'pending_assignment' ||
+          r.status === 'driver_accepted' || 
+          r.status === 'otp_verified' ||
+          r.status === 'in_progress' ||
+          r.status === 'en_route'
         ).length;
         const completedCount = rides.filter((r: any) => r.status === 'completed').length;
         const availableDrivers = drivers.filter((d: any) => d.is_available).length;
@@ -329,6 +359,8 @@ function App() {
           recommended_hospital: ride.recommended_hospitals && ride.recommended_hospitals.length > 0 
             ? ride.recommended_hospitals[0].name 
             : null,
+          // Add completion status for visual indication
+          isCompleted: ride.status === 'completed',
           recommended_hospitals: ride.recommended_hospitals || []
         }));
         setEmergencies(transformedData);
