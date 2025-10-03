@@ -1,384 +1,207 @@
-# 🚑 Aapat Emergency Ambulance Service Platform
+# 🚑 Aapat Emergency Platform
 
-A comprehensive, real-time emergency response platform built with microservices architecture, featuring AI-powered dispatch, real-time tracking, and multi-channel communication.
+**Uber-style Ambulance Booking System** - Complete emergency medical transport platform with real-time driver matching, OTP verification, and payment processing.
 
-## 🌟 Features
+## 🚀 Features
 
-### Backend Services (Microservices Architecture)
+### 🤖 Uber-Style Functionality
+- **📱 Ride Request Broadcasting** - Sends requests to all nearby drivers
+- **🚑 Driver Acceptance System** - Real-time driver matching and acceptance
+- **🔐 OTP Authentication** - Secure customer-driver verification
+- **💳 Payment Processing** - Automatic payment at ride completion
+- **📊 Real-time Tracking** - Live driver and ride status updates
+- **🎯 Dynamic Pricing** - Automated fare calculation based on distance, equipment, and priority
 
-#### 1. Emergency Request Service
-- **Priority Classification**: AI-powered emergency priority assessment (Critical, High, Medium, Low)
-- **Real-time Tracking**: Live emergency status updates
-- **Symptom Analysis**: Advanced triage based on symptoms and vital signs
-- **Location-based Handling**: GPS-enabled emergency processing
-
-#### 2. Ambulance Management Service
-- **Fleet Tracking**: Real-time GPS location monitoring
-- **Driver Management**: Certification and performance tracking
-- **Equipment Monitoring**: Vehicle equipment status and maintenance
-- **Availability Management**: Dynamic fleet status updates
-
-#### 3. Dispatch Service
-- **Intelligent Assignment**: AI-powered ambulance selection algorithm
-- **Traffic-aware Routing**: Real-time traffic consideration
-- **Priority-based Dispatch**: Smart load balancing across fleet
-- **ETA Calculations**: Accurate arrival time predictions
-
-#### 4. Patient Management Service
-- **Medical History**: Comprehensive patient records
-- **Emergency Contacts**: Multi-contact management
-- **Insurance Integration**: Seamless insurance verification
-- **Care Continuity**: End-to-end patient journey tracking
-
-#### 5. Hospital Integration Service
-- **Bed Availability**: Real-time hospital capacity monitoring
-- **Department Management**: Specialized department tracking
-- **Admission Coordination**: Streamlined patient handover
-- **Equipment Tracking**: Medical equipment availability
-
-#### 6. Communication Service
-- **Multi-channel Notifications**: SMS, Voice, Push, Email
-- **Template Management**: Predefined message templates
-- **Real-time Updates**: Live communication status tracking
-- **Multi-language Support**: Localized communication
-
-#### 7. Payment & Billing Service
-- **Dynamic Pricing**: Distance and priority-based pricing
-- **Insurance Processing**: Automated insurance claim handling
-- **Multiple Payment Methods**: Card, UPI, Net Banking, Wallet
-- **Government Scheme Integration**: Public healthcare support
-
-#### 8. Analytics Service
-- **Performance Metrics**: Response time analysis
-- **Demand Forecasting**: Predictive analytics
-- **Resource Optimization**: Fleet utilization insights
-- **Real-time Dashboards**: Live operational metrics
-
-### Frontend Applications
-
-#### 1. Emergency Dashboard (Web)
-- **Real-time Monitoring**: Live emergency status display
-- **Interactive Maps**: GPS-enabled location tracking
-- **Performance KPIs**: Key performance indicators
-- **Priority Management**: Emergency priority visualization
-
-#### 2. Public Emergency App (Mobile)
-- **One-tap Emergency**: Instant emergency request with haptic feedback
-- **GPS Integration**: Automatic location detection with manual override
-- **Voice Commands**: 15+ Indian languages support
-- **Offline Mode**: SMS/IVR fallback for critical situations
-- **Real-time Tracking**: Live ambulance location with ETA
-- **Emergency Contacts**: Quick contact management and SMS notifications
-- **Medical History**: Integration with patient medical records
-- **Hospital Selection**: Real-time bed availability and hospital selection
-
-#### 3. Driver/Paramedic App (Mobile)
-- **Emergency Notifications**: Real-time call alerts with sound/vibration
-- **Navigation Integration**: GPS routing and navigation
-- **Patient Information**: Access to patient records and vitals
-- **Status Updates**: Real-time status reporting (5 states)
-- **Quick Actions**: Emergency contacts, navigation, equipment check
-- **Offline Support**: Critical functions work without internet
-- **Route Optimization**: AI-powered route suggestions
-
-#### 4. Hospital Staff Portal (Web)
-- **Patient Management**: Incoming patient notifications
-- **Bed Management**: Real-time capacity tracking
-- **Handover Interface**: Seamless patient transfer
-- **Equipment Status**: Medical equipment monitoring
-
-#### 5. Admin Management Panel (Web)
-- **System Monitoring**: Comprehensive system health
-- **User Management**: Role-based access control
-- **Fleet Configuration**: Ambulance and driver management
-- **Performance Reports**: Detailed analytics and reporting
+### 🏥 Medical Emergency Features
+- **⚡ Emergency Dispatch** - Immediate ambulance assignment for critical cases
+- **📅 Scheduled Rides** - Advance booking for non-emergency medical transport
+- **🚑 Medical Equipment** - Type-specific ambulance matching (Basic, Advanced, Critical Care)
+- **📞 Emergency Communication** - Real-time updates between patient, driver, and hospital
 
 ## 🏗️ Architecture
 
-### Technology Stack
+### Microservices Design
+```
+🚗 Driver Matching Service (Port 3012) - Core Uber functionality
+💳 Payment Service (Port 3009) - Payment processing
+🚑 Ambulance Service (Port 3002) - Fleet management
+📱 Booking Service (Port 3010) - Ride booking management
+🌐 API Proxy (Port 5000) - Cross-origin request handling
+```
 
-**Backend:**
-- **Node.js** with Express.js
-- **PostgreSQL** with PostGIS for location data
-- **Redis** for caching and real-time data
-- **Socket.io** for real-time communication
-- **Docker** for containerization
+### Core Services
 
-**Frontend:**
-- **React** with TypeScript
-- **Socket.io-client** for real-time updates
-- **Responsive Design** for multi-device support
+#### 🚗 **uber-style-driver-matching-service.js**
+Main Uber-style driver matching and ride management service:
+- Real-time driver availability checking
+- Ride request broadcasting to nearby drivers
+- Driver acceptance/rejection handling
+- OTP generation and verification
+- Complete ride lifecycle management
 
-**Infrastructure:**
-- **Microservices Architecture**
-- **API Gateway** for service orchestration
-- **Docker Compose** for local development
-- **PostGIS** for geospatial operations
+#### 💳 **simple-payment-service.js**
+Payment processing service with support for:
+- UPI, Credit/Debit Cards, Cash payments
+- Insurance billing integration
+- Automatic fare calculation
+- Payment gateway integration (Razorpay ready)
 
-### Database Schema
+#### 🚑 **simple-ambulance-service.js**
+Ambulance fleet management:
+- Driver and vehicle information
+- Equipment level tracking (Basic/Advanced/Critical Care)
+- Real-time location updates
+- Availability management
 
-The platform uses a comprehensive PostgreSQL database with PostGIS extension for geospatial data:
+#### 📱 **simple-ride-booking-service.js**
+Booking management service:
+- Ride request processing
+- Fare estimation
+- Booking confirmation and tracking
 
-- **Users & Authentication**: Role-based access control
-- **Emergency Requests**: Complete emergency lifecycle
-- **Patient Management**: Medical history and contacts
-- **Ambulance Fleet**: Vehicle and driver management
-- **Hospital Integration**: Capacity and department tracking
-- **Communication Logs**: Multi-channel communication history
-- **Billing & Payments**: Financial transaction management
-- **Analytics & Metrics**: Performance and operational data
+## 📱 Mobile Applications
+
+### React Native Apps
+- **mobile-apps/RideBookingApp/** - Customer mobile app (Uber-style interface)
+- **Patient App** - Emergency request interface
+- **Driver App** - Driver acceptance and navigation interface
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- Docker and Docker Compose
-- Node.js 18+ (for local development)
-- Git
+- Node.js 14+ 
+- npm/yarn
 
 ### Installation
 
-1. **Clone the repository:**
-```bash
-git clone <repository-url>
-cd aapat
-```
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/Ritikajaiswal2707/aapat.git
+   cd aapat
+   ```
 
-2. **Start the services:**
-```bash
-docker-compose up -d
-```
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-3. **Access the applications:**
-- **API Gateway**: http://localhost:3000
-- **Emergency Dashboard**: http://localhost:3000 (React app)
-- **Mobile Apps**: http://localhost:3000/mobile
-- **Hospital Portal**: http://localhost:3000/hospital
+3. **Start Core Services**
+   ```bash
+   # Start Driver Matching Service (Main Uber functionality)
+   node uber-style-driver-matching-service.js
+   
+   # Start Payment Service
+   node simple-payment-service.js
+   
+   # Start Ambulance Service  
+   node simple-ambulance-service.js
+   
+   # Start Ride Booking Service
+   node simple-ride-booking-service.js
+   
+   # Start API Proxy
+   node api-proxy.js
+   ```
 
 ### Service Endpoints
 
-| Service | Port | Health Check |
-|---------|------|--------------|
-| API Gateway | 3000 | http://localhost:3000/health |
-| Emergency Service | 3001 | http://localhost:3001/health |
-| Ambulance Service | 3002 | http://localhost:3002/health |
-| Dispatch Service | 3003 | http://localhost:3003/health |
-| Hospital Service | 3004 | http://localhost:3004/health |
-| Patient Service | 3005 | http://localhost:3005/health |
-| Communication Service | 3006 | http://localhost:3006/health |
-| Billing Service | 3007 | http://localhost:3007/health |
-| Analytics Service | 3008 | http://localhost:3008/health |
-
-## 📱 API Documentation
-
-### Emergency Request
-
-**Create Emergency Request:**
-```bash
-POST /api/emergency/request
-Content-Type: application/json
-
-{
-  "caller_phone": "+91-9876543210",
-  "patient_info": {
-    "name": "John Doe",
-    "age": 45,
-    "gender": "MALE",
-    "blood_type": "O+"
-  },
-  "location": {
-    "latitude": 12.9716,
-    "longitude": 77.5946
-  },
-  "address": "123 MG Road, Bangalore",
-  "emergency_type": "CARDIAC",
-  "symptoms": "Chest pain, difficulty breathing",
-  "conscious": true,
-  "breathing": true,
-  "pain_level": 8
-}
-```
-
-**Get Emergency Status:**
-```bash
-GET /api/emergency/status/{emergency_id}
-```
-
-### Ambulance Management
-
-**Get Available Ambulances:**
-```bash
-GET /api/ambulances/available/nearby?latitude=12.9716&longitude=77.5946&radius=10
-```
-
-**Update Ambulance Location:**
-```bash
-PUT /api/ambulances/{ambulance_id}/location
-Content-Type: application/json
-
-{
-  "latitude": 12.9716,
-  "longitude": 77.5946,
-  "heading": 45,
-  "speed": 30
-}
-```
-
-### Dispatch Management
-
-**Assign Ambulance:**
-```bash
-POST /api/dispatch/assign
-Content-Type: application/json
-
-{
-  "emergency_id": "uuid",
-  "preferred_ambulance_id": "uuid"
-}
-```
-
-**Update Dispatch Status:**
-```bash
-PUT /api/dispatch/status/{assignment_id}
-Content-Type: application/json
-
-{
-  "status": "EN_ROUTE",
-  "notes": "Ambulance en route to patient"
-}
-```
-
-## 🔧 Configuration
-
-### Environment Variables
-
-Create a `.env` file in the root directory:
-
-```env
-# Database Configuration
-DB_HOST=postgres
-DB_PORT=5432
-DB_USER=aapat_user
-DB_PASSWORD=aapat_password
-DB_NAME=aapat_db
-
-# Redis Configuration
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-# JWT Configuration
-JWT_SECRET=your-secret-key
-
-# External Services
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
-TWILIO_PHONE_NUMBER=+1234567890
-
-STRIPE_SECRET_KEY=sk_test_your_stripe_key
-RAZORPAY_KEY_ID=rzp_test_your_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_secret
-
-FIREBASE_SERVICE_ACCOUNT_KEY=your-firebase-key
-```
+- **Driver Matching:** http://localhost:3012
+- **Payment Processing:** http://localhost:3009  
+- **Ambulance Management:** http://localhost:3002
+- **Booking Service:** http://localhost:3010
+- **API Proxy:** http://localhost:5000
 
 ## 🧪 Testing
 
-### Run Tests
-
+### Health Checks
 ```bash
-# Backend tests
-cd services/emergency-service
-npm test
-
-# Frontend tests
-cd frontend
-npm test
+curl http://localhost:3012/health
+curl http://localhost:3009/health
+curl http://localhost:3002/health
+curl http://localhost:3010/health
 ```
 
-### Load Testing
+### Testing API Flow
 
-```bash
-# Using Artillery for load testing
-npm install -g artillery
-artillery run load-test.yml
-```
+1. **Request Ride**
+   ```bash
+   curl -X POST http://localhost:3012/api/ride/request \
+     -H "Content-Type: application/json" \
+     -d '{
+       "customer": {"name": "Test Patient", "phone": "9876543210"},
+       "ride_type": "emergency",
+       "pickup_location": {"lat": 28.6315, "lng": 77.2167, "address": "Delhi"},
+       "destination_location": {"lat": 28.5667, "lng": 77.2090, "address": "Hospital"}
+     }'
+   ```
 
-## 📊 Monitoring & Analytics
+2. **Driver Accepts Ride**
+   ```bash
+   curl -X POST http://localhost:3012/api/driver/driver-001/accept \
+     -H "Content-Type: application/json" \
+     -d '{"ride_request_id": "your-ride-id"}'
+   ```
 
-### Real-time Metrics
+3. **Generate OTP**
+   ```bash
+   curl -X POST http://localhost:3012/api/ride/your-ride-id/generate-otp
+   ```
 
-- **Response Time**: Average emergency response time
-- **Fleet Utilization**: Ambulance availability and usage
-- **Emergency Volume**: Real-time emergency request count
-- **Hospital Capacity**: Live bed availability across hospitals
+4. **Verify OTP & Complete Ride**
+   ```bash
+   curl -X POST http://localhost:3012/api/driver/driver-001/verify-otp \
+     -H "Content-Type: application/json" \
+     -d '{"ride_request_id": "your-ride-id", "otp_entered": "1234"}'
+   ```
 
-### Performance Monitoring
+## 📊 System Status
 
-- **Service Health**: Individual microservice status
-- **Database Performance**: Query performance and optimization
-- **API Response Times**: Endpoint performance metrics
-- **Error Rates**: System error tracking and alerting
+**Current Capabilities:**
+- ✅ Multi-driver concurrent ride management
+- ✅ Real-time driver availability tracking  
+- ✅ Secure OTP-based authentication
+- ✅ Dynamic pricing engine (₹2,250 base + multipliers)
+- ✅ Complete payment integration
+- ✅ Professional driver management system
 
-## 🔒 Security Features
+## 🌟 Business Model
 
-### Data Protection
-- **HIPAA Compliance**: Medical data protection standards
-- **End-to-end Encryption**: Secure data transmission
-- **Role-based Access Control**: Granular permission management
-- **API Rate Limiting**: Protection against abuse
+**Revenue Streams:**
+- Ride fare commissions
+- Premium driver membership
+- Emergency response surcharges
+- Corporate medical transport contracts
 
-### Authentication & Authorization
-- **JWT Tokens**: Secure authentication
-- **Multi-factor Authentication**: Enhanced security
-- **Session Management**: Secure session handling
-- **Audit Logging**: Comprehensive activity tracking
+**Market Differentiation:**
+- Focus on medical emergencies vs regular taxi service
+- Professional paramedic drivers
+- Medical equipment-equipped vehicles
+- Hospital integration capabilities
 
-## 🚀 Deployment
+## 🔧 Technology Stack
 
-### Production Deployment
+- **Backend:** Node.js, Express.js
+- **Real-time:** Socket.io
+- **Payment:** Razorpay integration ready
+- **Mobile:** React Native
+- **Architecture:** Microservices
+- **Security:** OTP verification system
+- **Monitoring:** Health check endpoints
 
-1. **Configure Environment Variables**
-2. **Set up SSL Certificates**
-3. **Configure Load Balancer**
-4. **Set up Monitoring and Logging**
-5. **Deploy to Production Environment**
+## 📈 Scalability
 
-### Docker Production
-
-```bash
-# Build production images
-docker-compose -f docker-compose.prod.yml build
-
-# Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
-```
+- **Multi-city deployment support**
+- **Driver onboarding system**
+- **Hospital partner integration**
+- **Government emergency service integration**
+- **Insurance company partnerships**
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+This platform is designed to revolutionize emergency medical transport by applying Uber's proven business model to medical services.
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-For support and questions:
-- **Email**: support@aapat.com
-- **Documentation**: [docs.aapat.com](https://docs.aapat.com)
-- **Issues**: [GitHub Issues](https://github.com/aapat/issues)
-
-## 🙏 Acknowledgments
-
-- Emergency Medical Services community
-- Open source contributors
-- Healthcare technology innovators
-- First responders and medical professionals
+**Key Innovation:** Combining Uber's efficiency with medical emergency urgency - making reliable medical transport as accessible as ordering a taxi.
 
 ---
 
-**Aapat Emergency Services** - *Saving lives, one call at a time* 🚑
+**🚑 The Future of Emergency Medical Transport** - Just like Uber, but for life-saving services.
