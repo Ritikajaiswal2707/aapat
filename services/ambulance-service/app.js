@@ -477,10 +477,104 @@ app.get('/api/ambulances/:id/maintenance', async (req, res) => {
   }
 });
 
+// Mock available ambulances endpoint
+app.get('/api/ambulances/available', async (req, res) => {
+  try {
+    const { lat, lng, equipment_level, priority } = req.query;
+    
+    // Mock ambulance data for testing
+    const mockAmbulances = [
+      {
+        id: 'amb-001',
+        driver_id: 'driver-001',
+        driver_name: 'Rahul Singh',
+        driver_phone: '9876543210',
+        driver_rating: 4.8,
+        vehicle_number: 'DL-01-AB-1234',
+        vehicle_model: 'Tata Ace',
+        equipment_level: 'ADVANCED',
+        equipment_list: ['oxygen', 'defibrillator', 'heart_monitor', 'stretcher'],
+        current_location: {
+          lat: parseFloat(lat) + 0.005,
+          lng: parseFloat(lng) + 0.003
+        },
+        lat: parseFloat(lat) + 0.005,
+        lng: parseFloat(lng) + 0.003,
+        status: 'AVAILABLE',
+        fuel_level: 85,
+        is_active: true,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'amb-002',
+        driver_id: 'driver-002',
+        driver_name: 'Priya Sharma',
+        driver_phone: '9123456789',
+        driver_rating: 4.9,
+        vehicle_number: 'DL-02-CD-5678',
+        vehicle_model: 'Force Gurkha',
+        equipment_level: 'CRITICAL_CARE',
+        equipment_list: ['oxygen', 'defibrillator', 'heart_monitor', 'ventilator', 'stretcher'],
+        current_location: {
+          lat: parseFloat(lat) + 0.008,
+          lng: parseFloat(lng) + 0.001
+        },
+        lat: parseFloat(lat) + 0.008,
+        lng: parseFloat(lng) + 0.001,
+        status: 'AVAILABLE',
+        fuel_level: 92,
+        is_active: true,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'amb-003',
+        driver_id: 'driver-003',
+        driver_name: 'Amit Kumar',
+        driver_phone: '9988776655',
+        driver_rating: 4.7,
+        vehicle_number: 'DL-03-EF-9012',
+        vehicle_model: 'Mahindra Bolero',
+        equipment_level: 'INTERMEDIATE',
+        equipment_list: ['oxygen', 'defibrillator', 'stretcher'],
+        current_location: {
+          lat: parseFloat(lat) + 0.003,
+          lng: parseFloat(lng) - 0.002
+        },
+        lat: parseFloat(lat) + 0.003,
+        lng: parseFloat(lng) - 0.002,
+        status: 'AVAILABLE',
+        fuel_level: 78,
+        is_active: true,
+        created_at: new Date().toISOString()
+      }
+    ];
+
+    res.json({
+      success: true,
+      message: 'Available ambulances retrieved successfully',
+      data: mockAmbulances,
+      count: mockAmbulances.length,
+      filters: {
+        lat: lat || 'not specified',
+        lng: lng || 'not specified',
+        equipment_level: equipment_level || 'any',
+        priority: priority || 'not specified'
+      }
+    });
+
+  } catch (error) {
+    console.error('Get available ambulances error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get available ambulances'
+    });
+  }
+});
+
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     service: 'Aapat Ambulance Service',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
