@@ -74,6 +74,105 @@ const mockDrivers = [
     is_available: true,
     location: { lat: 28.6280, lng: 77.2100 },
     current_ride: null
+  },
+  // NEW DRIVERS FOR SCALED UP SYSTEM
+  {
+    id: 'driver-004',
+    name: 'Deepak Patel',
+    phone: '9923456789',
+    rating: 4.9,
+    vehicle_number: 'DL-04-GH-3456',
+    vehicle_type: 'Advanced Life Support',
+    equipment: ['oxygen', 'defibrillator', 'heart_monitor', 'endotracheal_tube'],
+    license_valid_until: '2026-06-30',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6400, lng: 77.2150 },
+    current_ride: null
+  },
+  {
+    id: 'driver-005',
+    name: 'Sneha Reddy',
+    phone: '9870123456',
+    rating: 4.8,
+    vehicle_number: 'DL-05-IJ-7890',
+    vehicle_type: 'Critical Care Unit',
+    equipment: ['oxygen', 'defibrillator', 'ventilator', 'heart_monitor', 'cpap', 'nebulizer'],
+    license_valid_until: '2026-02-28',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6200, lng: 77.2050 },
+    current_ride: null
+  },
+  {
+    id: 'driver-006',
+    name: 'Vikram Joshi',
+    phone: '9876543211',
+    rating: 4.6,
+    vehicle_number: 'DL-06-KL-2468',
+    vehicle_type: 'Basic Life Support',
+    equipment: ['oxygen', 'first_aid', 'stretcher', 'wheelchair'],
+    license_valid_until: '2025-10-15',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6450, lng: 77.2250 },
+    current_ride: null
+  },
+  {
+    id: 'driver-007',
+    name: 'Meera Krishnan',
+    phone: '9987654321',
+    rating: 4.9,
+    vehicle_number: 'DL-07-MN-1357',
+    vehicle_type: 'Neonatal Unit',
+    equipment: ['oxygen', 'incubator', 'neonatal_monitor', 'warming_lights'],
+    license_valid_until: '2026-08-20',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6150, lng: 77.1950 },
+    current_ride: null
+  },
+  {
+    id: 'driver-008',
+    name: 'Arjun Singh',
+    phone: '9876543212',
+    rating: 4.7,
+    vehicle_number: 'DL-08-OP-9876',
+    vehicle_type: 'Trauma Response Unit',
+    equipment: ['oxygen', 'defibrillator', 'spine_board', 'cervical_collar', 'trauma_kit'],
+    license_valid_until: '2025-09-30',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6500, lng: 77.2300 },
+    current_ride: null
+  },
+  {
+    id: 'driver-009',
+    name: 'Kavya Sharma',
+    phone: '9123456787',
+    rating: 4.8,
+    vehicle_number: 'DL-09-QR-6543',
+    vehicle_type: 'Advanced Life Support',
+    equipment: ['oxygen', 'defibrillator', 'heart_monitor', 'mobile_ecg'],
+    license_valid_until: '2026-04-15',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6100, lng: 77.1900 },
+    current_ride: null
+  },
+  {
+    id: 'driver-010',
+    name: 'Ravi Chaudhry',
+    phone: '9870123457',
+    rating: 4.5,
+    vehicle_number: 'DL-10-ST-2109',
+    vehicle_type: 'Basic Life Support',
+    equipment: ['oxygen', 'first_aid', 'stretcher', 'basic_medications'],
+    license_valid_until: '2025-12-10',
+    is_online: true,
+    is_available: true,
+    location: { lat: 28.6550, lng: 77.2350 },
+    current_ride: null
   }
 ];
 
@@ -82,8 +181,8 @@ mockDrivers.forEach(driver => {
   drivers.set(driver.id, driver);
 });
 
-// Helper function to find nearby drivers
-function findNearbyDrivers(userLocation, radiusKm = 10) {
+// Helper function to find nearby drivers (scaled up for larger fleet)
+function findNearbyDrivers(userLocation, radiusKm = 15) {
   const nearbyDrivers = [];
   
   drivers.forEach(driver => {

@@ -1,6 +1,6 @@
 # 🚑 Aapat Emergency Platform
 
-**Uber-style Ambulance Booking System** - Complete emergency medical transport platform with real-time driver matching, OTP verification, and payment processing.
+**Complete Integrated Dashboard** - Professional emergency medical transport platform featuring Uber-style booking, real-time driver matching, OTP verification, and comprehensive management dashboard.
 
 ## 🚀 Features
 
@@ -17,6 +17,13 @@
 - **📅 Scheduled Rides** - Advance booking for non-emergency medical transport
 - **🚑 Medical Equipment** - Type-specific ambulance matching (Basic, Advanced, Critical Care)
 - **📞 Emergency Communication** - Real-time updates between patient, driver, and hospital
+
+### 🎯 **Integrated Dashboard**
+- **📊 Overview Dashboard** - Real-time metrics and KPIs
+- **🚨 Emergency Management** - Complete emergency lifecycle tracking
+- **🚑 Ambulance Fleet** - Driver and vehicle management
+- **🏥 Hospital Partners** - Partner hospital monitoring
+- **🚑 Ambulance Booking** - Modern ambulance booking interface with driver matching
 
 ## 🏗️ Architecture
 
