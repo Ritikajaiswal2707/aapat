@@ -1,6 +1,5 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useCallback, FormEvent } from 'react';
 import io from 'socket.io-client';
-import axios from 'axios';
 
 interface Emergency {
   id: string;
@@ -19,6 +18,7 @@ interface Emergency {
 
 interface DashboardMetrics {
   active_emergencies: number;
+  in_progress_emergencies: number;
   avg_response_time: number;
   available_ambulances: number;
   partner_hospitals: number;
@@ -31,15 +31,7 @@ interface DashboardMetrics {
   avg_response_time_trend: number;
 }
 
-interface Ambulance {
-  id: string;
-  license_plate: string;
-  status: string;
-  location: { lat: number; lng: number };
-  driver_name: string;
-  equipment_level: string;
-  eta_minutes?: number;
-}
+// Ambulance interface removed as it's unused
 
 interface Hospital {
   id: string;
@@ -137,6 +129,7 @@ interface Driver {
 function App() {
   const [metrics, setMetrics] = useState<DashboardMetrics>({
     active_emergencies: 0,
+    in_progress_emergencies: 0,
     avg_response_time: 0,
     available_ambulances: 0,
     partner_hospitals: 0,
@@ -150,9 +143,7 @@ function App() {
   });
   
   const [emergencies, setEmergencies] = useState<Emergency[]>([]);
-  const [ambulances, setAmbulances] = useState<Ambulance[]>([]);
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
-  const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'emergencies' | 'hospitals' | 'uber-rides'>('overview');
   
@@ -193,10 +184,17 @@ function App() {
     return typeOk && statusOk && searchOk;
   });
 
+  const updateMetrics = useCallback(() => {
+    fetchMetrics();
+    fetchAmbulances();
+    fetchHospitals();
+    fetchUberRides();
+    fetchDrivers();
+  }, []); // Empty dependencies since these functions don't depend on state
+
   useEffect(() => {
     // Initialize socket connection
     const newSocket = io('http://localhost:3012');
-    setSocket(newSocket);
 
     newSocket.on('connect', () => {
       setIsConnected(true);
@@ -248,7 +246,7 @@ function App() {
       newSocket.close();
       clearInterval(refreshInterval);
     };
-  }, []);
+  }, [updateMetrics]);
 
   const fetchMetrics = async () => {
     try {
@@ -270,7 +268,9 @@ function App() {
         const activeCount = rides.filter((r: any) => 
           r.status === 'searching_drivers' || 
           r.status === 'broadcasting' || 
-          r.status === 'pending_assignment' ||
+          r.status === 'pending_assignment'
+        ).length;
+        const inProgressCount = rides.filter((r: any) => 
           r.status === 'driver_accepted' || 
           r.status === 'otp_verified' ||
           r.status === 'in_progress' ||
@@ -281,6 +281,7 @@ function App() {
         
         setMetrics({
           active_emergencies: activeCount,
+          in_progress_emergencies: inProgressCount,
           avg_response_time: 5.2, // Mock value
           available_ambulances: availableDrivers,
           partner_hospitals: 15, // Mock value
@@ -303,7 +304,7 @@ function App() {
       const response = await fetch('http://localhost:3002/api/ambulances');
       const data = await response.json();
       if (data.success) {
-        setAmbulances(data.data);
+        // Currently not displaying ambulances data
       }
     } catch (error) {
       console.error('Failed to fetch ambulances:', error);
@@ -370,18 +371,48 @@ function App() {
     }
   };
 
-  const updateMetrics = () => {
-    fetchMetrics();
-    fetchAmbulances();
-    fetchHospitals();
-    fetchUberRides();
-    fetchDrivers();
-  };
-
   // Uber-style API functions
   const fetchUberRides = async () => {
     try {
-      // Mock data since we don't have a dedicated store endpoint
+      // Fetch real ride data from the API
+      const response = await fetch('http://localhost:3012/api/rides');
+      const data = await response.json();
+      
+      if (data.success) {
+        // Transform API data to UberStyleRide format
+        const realRides: UberStyleRide[] = (data.data || []).map((ride: any) => ({
+          id: ride.id || ride.ride_request_id,
+          customer: {
+            name: ride.customer?.name || 'Unknown Patient',
+            phone: ride.customer?.phone || 'N/A',
+            email: ride.customer?.email
+          },
+          ride_type: ride.ride_type || 'emergency',
+          pickup_location: {
+            lat: ride.pickup_location?.lat || 28.6139,
+            lng: ride.pickup_location?.lng || 77.209,
+            address: ride.pickup_location?.address || 'Delhi'
+          },
+          destination_location: ride.destination_location ? {
+            lat: ride.destination_location.lat,
+            lng: ride.destination_location.lng,
+            address: ride.destination_location.address
+          } : undefined,
+          medical_info: ride.medical_info || {},
+          status: ride.status || 'pending_assignment',
+          estimated_fare: ride.estimated_fare,
+          assigned_driver: ride.assigned_driver,
+          recommended_hospitals: ride.recommended_hospitals,
+          otp: ride.otp,
+          payment_status: ride.payment_status || 'pending',
+          created_at: ride.created_at || new Date().toISOString()
+        }));
+        
+        setUberRides(realRides);
+        return;
+      }
+      
+      // Fallback to mock data if API fails
       const mockRides: UberStyleRide[] = [
         {
           id: 'a998e60e-123d-49c8-82dc-bc0b9d0d3e24',
@@ -420,8 +451,7 @@ function App() {
 
   const fetchDrivers = async () => {
     try {
-      const response = await fetch('http://localhost:3012/health');
-      const data = await response.json();
+      await fetch('http://localhost:3012/health');
       
          // Scaled-up driver fleet data
          const mockDrivers: Driver[] = [
@@ -647,7 +677,7 @@ function App() {
     }
   };
 
-  const submitCustomEmergency = async (e?: React.FormEvent) => {
+  const submitCustomEmergency = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     const payload = {
       customer: {
@@ -698,27 +728,78 @@ function App() {
     setEmergencies(prev => prev.map(e => e.id === id ? { ...e, status: newStatus } as any : e));
   };
 
+  const startRide = async (rideId: string) => {
+    try {
+      // First, generate OTP for the ride
+      const otpResponse = await fetch(`http://localhost:3012/api/ride/${rideId}/generate-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      const otpResult = await otpResponse.json();
+      if (!otpResult.success) {
+        alert('❌ Failed to generate OTP: ' + otpResult.message);
+        return;
+      }
+
+      // Then verify the OTP to start the ride
+      const verifyResponse = await fetch(`http://localhost:3012/api/driver/driver-001/verify-otp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ride_request_id: rideId,
+          otp_entered: otpResult.otp // Use the generated OTP
+        })
+      });
+
+      const verifyResult = await verifyResponse.json();
+      if (verifyResult.success) {
+        alert('✅ Ride started successfully!');
+        updateMetrics(); // Refresh data
+        fetchRecentEmergencies(); // Refresh emergencies list
+      } else {
+        alert('❌ Failed to start ride: ' + verifyResult.message);
+      }
+    } catch (error) {
+      console.error('Error starting ride:', error);
+      alert('❌ Error starting ride: ' + error.message);
+    }
+  };
+
+  const completeRide = async (rideId: string) => {
+    try {
+      const response = await fetch(`http://localhost:3012/api/ride/${rideId}/complete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          payment_confirmed: true,
+          fare_paid: 400 // Mock fare amount
+        })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        alert('✅ Ride completed successfully!');
+        updateMetrics(); // Refresh data
+        fetchRecentEmergencies(); // Refresh emergencies list
+      } else {
+        alert('❌ Failed to complete ride: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error completing ride:', error);
+      alert('❌ Error completing ride: ' + error.message);
+    }
+  };
+
   const closeDetails = () => setSelectedEmergency(null);
 
-  // Mock driver assignment helpers
-  const toRad = (value: number) => (value * Math.PI) / 180;
-  const haversineKm = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => {
-    const R = 6371; // km
-    const dLat = toRad(b.lat - a.lat);
-    const dLon = toRad(b.lng - a.lng);
-    const lat1 = toRad(a.lat);
-    const lat2 = toRad(b.lat);
-    const sinDLat = Math.sin(dLat / 2);
-    const sinDLon = Math.sin(dLon / 2);
-    const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLon * sinDLon;
-    return 2 * R * Math.asin(Math.sqrt(h));
-  };
-
-  const estimateEtaMinutes = (distanceKm: number) => {
-    // Mock average urban speed ~30 km/h
-    const speedKmh = 30;
-    return Math.max(2, Math.round((distanceKm / speedKmh) * 60));
-  };
+  // Driver assignment helpers removed as they were unused
 
   const assignNearestAmbulance = async (emergencyId: string) => {
     try {
@@ -784,17 +865,7 @@ function App() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'AVAILABLE': return '#10b981';
-      case 'ASSIGNED': return '#f59e0b';
-      case 'ON_ROUTE': return '#3b82f6';
-      case 'AT_PATIENT': return '#8b5cf6';
-      case 'TRANSPORTING': return '#dc2626';
-      case 'AT_HOSPITAL': return '#6b7280';
-      default: return '#6b7280';
-    }
-  };
+  // getStatusColor function removed as it was unused
 
   // Uber-style helper functions
   const getRideStatusColor = (status: string) => {
@@ -922,7 +993,19 @@ function App() {
           }}>
             <h3 style={{ color: '#e53e3e', marginTop: 0 }}>🚨 Active Emergencies</h3>
             <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>{metrics.active_emergencies}</p>
-            <p style={{ color: '#666', fontSize: '0.9rem' }}>Currently being handled</p>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>Awaiting driver assignment</p>
+          </div>
+          
+          <div style={{
+            background: 'white',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            borderLeft: '4px solid #f59e0b'
+          }}>
+            <h3 style={{ color: '#f59e0b', marginTop: 0 }}>🚑 In Progress</h3>
+            <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: '10px 0' }}>{metrics.in_progress_emergencies}</p>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>Driver assigned & en route</p>
           </div>
           
           <div style={{
@@ -1093,10 +1176,10 @@ function App() {
                       <button onClick={() => assignNearestAmbulance(emergency.id)} style={{
                         background: '#3b82f6', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
                       }}>Assign</button>
-                      <button onClick={() => updateEmergencyStatusLocal(emergency.id, 'IN_PROGRESS')} style={{
+                      <button onClick={() => startRide(emergency.id)} style={{
                         background: '#8b5cf6', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
                       }}>Start</button>
-                      <button onClick={() => updateEmergencyStatusLocal(emergency.id, 'COMPLETED')} style={{
+                      <button onClick={() => completeRide(emergency.id)} style={{
                         background: '#10b981', color: 'white', padding: '6px 10px', border: 'none', borderRadius: '6px', cursor: 'pointer'
                       }}>Complete</button>
                     </div>
@@ -1763,8 +1846,8 @@ function App() {
             
             <div style={{ marginTop: '12px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '8px' }}>
               <button onClick={() => assignNearestAmbulance(selectedEmergency.id)} style={{ background: '#3b82f6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Assign</button>
-              <button onClick={() => updateEmergencyStatusLocal(selectedEmergency.id, 'IN_PROGRESS')} style={{ background: '#8b5cf6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Start</button>
-              <button onClick={() => updateEmergencyStatusLocal(selectedEmergency.id, 'COMPLETED')} style={{ background: '#10b981', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Complete</button>
+              <button onClick={() => startRide(selectedEmergency.id)} style={{ background: '#8b5cf6', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Start</button>
+              <button onClick={() => completeRide(selectedEmergency.id)} style={{ background: '#10b981', color: 'white', padding: '8px 10px', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Complete</button>
             </div>
           </div>
         </div>
