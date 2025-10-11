@@ -949,8 +949,8 @@ function App() {
         }}>
           {[
             { id: 'overview', label: '📊 Overview', icon: 'chart-pie' },
-            { id: 'emergencies', label: '🚨 Emergencies', icon: 'exclamation-triangle' },
             { id: 'uber-rides', label: '🚑 Ambulance Booking', icon: 'ambulance' },
+            { id: 'emergencies', label: '🚨 Emergencies', icon: 'exclamation-triangle' },
             { id: 'hospitals', label: '🏥 Hospitals', icon: 'hospital' }
           ].map(tab => (
             <button
